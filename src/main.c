@@ -1,30 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minisihell.h                                       :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/04 13:43:03 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/03/04 21:47:49 by hirwatan         ###   ########.fr       */
+/*   Created: 2025/03/04 21:47:59 by hirwatan          #+#    #+#             */
+/*   Updated: 2025/03/04 22:07:04 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <fcntl.h>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <signal.h>
-#include <dirent.h>
-#include <errno.h>
-#include <termios.h>
-#include <curses.h>
-#include <term.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+#include <../inc/minishell.h>
 
-//-L -leadline -lcurses
+int	main(void)
+{
+	char *line;
+	rl_outstream = stderr;
+	while (1)
+	{
+		line = readline("minihell$");
+		if (line == NULL)
+			break ;
+		if (*line)
+			add_history(line);
+		free(line);
+	}
+	exit(0);
+}
