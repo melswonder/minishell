@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 16:36:13 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/03/21 19:21:04 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:44:53 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,7 @@ void	main_command_execution(t_cmd_element *ce, char **envp)
 int	main(int argc, char *argv[], char *envp[])
 {
 	t_cmd_element	*ce;
-	int				i;
 
-	i = 0;
 	if (argc < 2)
 		return (0);
 	ce = argv_to_exec_args(argc, argv, envp);
