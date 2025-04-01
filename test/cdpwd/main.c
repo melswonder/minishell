@@ -75,8 +75,6 @@ void	lexer_w(char *str)
 						ft_cmd(str)); // errmsgなどを作りたい
 		}
 	}
-	else if(strncmp(str, "yoji", 4) == 0)
-		printf("私はyojiです\n");
 	else
 		printf("command not found: %s\n", str);
 	return ;
