@@ -1,55 +1,84 @@
 #include "../../inc/minishell.h"
 #include <string.h>
 
-int ft_strlen(char *str)
+int	ft_strlen(char *str)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	while (str[i])
 		i++;
-	return(i);
+	return (i);
 }
 
-char *get_directory(char *cmd)
+char	*get_directory(char *cmd)
 {
-	char *ptr = cmd;
-	while(*ptr && !(*ptr == ' ' || *ptr == '\t'))
+	char	*ptr;
+
+	ptr = cmd;
+	while (*ptr && !(*ptr == ' ' || *ptr == '\t'))
 		ptr++;
-	while(*ptr && (*ptr == ' ' || *ptr == '\t'))
+	while (*ptr && (*ptr == ' ' || *ptr == '\t'))
 		ptr++;
-	if(*ptr == '\0')
-		return(getenv("HOME"));
-	return(ptr);
+	if (*ptr == '\0')
+		return (getenv("HOME"));
+	return (ptr);
 }
 
-char *ft_cmd(char *str)
+char	*ft_cmd(char *str)
 {
-	char *ptr = str;
-	while(*ptr && !(*ptr == ' ' || *ptr == '\t'))
+	char	*ptr;
+
+	ptr = str;
+	while (*ptr && !(*ptr == ' ' || *ptr == '\t'))
 		ptr++;
-	while(*ptr && (*ptr == ' ' || *ptr == '\t'))
+	while (*ptr && (*ptr == ' ' || *ptr == '\t'))
 		ptr++;
-	return(ptr);
+	return (ptr);
 }
 
-void lexser_w(char *str)
+int	elements_check(char *str)
 {
-	char *pwd;
-	char *dir;
+	char	*ptr;
 
-	if(strncmp(str,"pwd",3) == 0)
+	ptr = str;
+	while (*ptr && !(*ptr == ' ' || *ptr == '\t'))
+		ptr++;
+	while (*ptr && (*ptr == ' ' || *ptr == '\t'))
+		ptr++;
+	if (*ptr && !(*ptr == ' ' || *ptr == '\t'))
+		return (1);
+	else
+		return (0);
+}
+
+void	lexer_w(char *str)
+{
+	char	*pwd;
+	char	*dir;
+
+	if (strncmp(str, "pwd", 3) == 0)
 	{
-		pwd = getcwd(NULL,0);
-		printf("%s\n",pwd);
+		pwd = getcwd(NULL, 0);
+		printf("%s\n", pwd);
 		free(pwd);
 	}
-	else if(strncmp(str,"cd",2) == 0)
+	else if (strncmp(str, "cd", 2) == 0)
 	{
 		dir = get_directory(str);
-		if(chdir(dir) != 0)
-			printf("bash: cd: %s: No such file or directory\n",ft_cmd(str)); //errmsgなどを作りたい
+		if (chdir(dir) != 0)
+		{
+			if (elements_check(str) == 1)
+				printf("bash: cd: too many arguments\n");
+			else
+				printf("bash: cd: %s: No such file or directory\n",
+						ft_cmd(str)); // errmsgなどを作りたい
+		}
 	}
+	else if(strncmp(str, "yoji", 4) == 0)
+		printf("私はyojiです\n");
 	else
-		printf("command not found: %s\n",str);
+		printf("command not found: %s\n", str);
 	return ;
 }
 
@@ -58,13 +87,13 @@ int	main(void)
 	char *line;
 	while (1)
 	{
-		line = readline("$");
+		line = readline("yojishell$");
 		if (line == NULL)
 			break ;
 		if (*line)
 		{
 			add_history(line);
-			lexser_w(line);
+			lexer_w(line);
 		}
 		free(line);
 	}
