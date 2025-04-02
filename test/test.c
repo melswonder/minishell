@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <readline/readline.h>
 #include <readline/history.h>
+#include <readline/readline.h>
+#include <stdio.h>
 
 // int main(void)
 // {
@@ -12,7 +12,7 @@
 //     return (0);
 // }
 
-//cc test.c -lreadline -lncurses
+// cc test.c -lreadline -lncurses
 
 //---⇡readline⇡---
 
@@ -39,7 +39,7 @@
 // int main(void)
 // {
 //     char *pwd;
-    
+
 //     pwd = getcwd(NULL, 0);
 //     printf("pwd before chdir: %s\n", pwd);
 //     chdir("/home/hirwatan/42/workspase/minishell/");
@@ -67,3 +67,5 @@
 // USER_ZDOTDIR=/home/hirwatan
 ///
 /// /home/hirwatan
+
+
