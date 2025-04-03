@@ -6,118 +6,132 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#define LINEBUF_MAX 2048
 
-int is_numeric(char *str)
+int	is_numeric(char *str)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    if (str[i] == '+' || str[i] == '-')
-        i++;
-    if (str[i] == '\0')
-        return (0);
-    while (str[i] != '\0') //数字かチェック
-    {
-        if (str[i] < '0' || str[i] > '9')
-            return (0);
-        i++;
-    }
-    return (1);
+	i = 0;
+	if (str[i] == '+' || str[i] == '-')
+		i++;
+	if (str[i] == '\0')
+		return (0);
+	while (str[i] != '\0') //数字かチェック
+	{
+		if (!isdigit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
-// 文字列をllong型に変換する関数
-long long ft_atoll(const char *str)
+//文字列をunsigned long long変換(over flowチェックもある)
+int	ft_atoull(const char *str, unsigned long long *result)
 {
-    long long result;
-    int sign;
-    int i;
+	unsigned long long	res;
+	int					i;
+	unsigned long long	prev;
 
-    result = 0;
-    sign = 1;
-    i = 0;
-
-    // 空白をスキップ
-    while ((str[i] >= 9 && str[i] <= 13) || str[i] == ' ')
-        i++;
-    
-    // 符号の処理
-    if (str[i] == '-')
-    {
-        sign = -1;
-        i++;
-    }
-    else if (str[i] == '+')
-        i++;
-    
-    // 数値変換
-    while (str[i] >= '0' && str[i] <= '9')
-    {
-        // オーバーフローチェック
-        if (result > LLONG_MAX / 10 || 
-            (result == LLONG_MAX / 10 && str[i] - '0' > LLONG_MAX % 10))
-            return (sign == 1 ? LLONG_MAX : LLONG_MIN);
-        
-        result = result * 10 + (str[i] - '0');
-        i++;
-    }
-    
-    return (result * sign);
+	res = 0;
+	i = 0;
+	while (isspace(str[i]))
+		i++;
+	while (str[i] >= '0' && str[i] <= '9')
+	{
+		prev = res;
+		res = res * 10 + (str[i] - '0');
+		if (res < prev)
+		{
+			*result = 0;
+			return (0);
+		}
+		i++;
+	}
+	if (str[i] != '\0')
+		return (0);
+	*result = res;
+	return (1);
 }
 
-void ft_exit(char *line, char *envp[])
+static char	*extract_arg(char *line, int *index)
 {
-    int i;
-    int j;
-    char arg[LINEBUF_MAX];
-    int arg_count;
-    long long value;
+	char	buffer[1024];
+	int		i;
+	int		j;
 
-    if (strncmp(line, "exit", 4) != 0)
-    {
-        printf("command not found: %s\n", line);
-        return;
-    }
+	i = *index;
+	j = 0;
+	while (line[i] != '\0' && line[i] != ' ')
+		buffer[j++] = line[i++];
+	buffer[j] = '\0';
+	*index = i;
+	return (strdup(buffer));
+}
 
-    printf("exit\n"); // bash同様、exitを表示
+int	has_extra_args(char *line, int i)
+{
+	while (line[i] == ' ')
+		i++;
+	return (line[i] != '\0');
+}
 
-    // exit の後の空白をスキップ
-    i = 4;
-    while (line[i] == ' ')
-        i++;
+int	is_valid_number(char *arg, unsigned long long *num)
+{
+	char	*num_start;
+	int		sign_present;
 
-    // 引数がない場合は通常終了（ステータス0）
-    if (line[i] == '\0')
-        exit(0);
+	num_start = arg;
+	sign_present = 0;
+	if (*num_start == '-' || *num_start == '+')
+	{
+		sign_present = 1;
+		num_start++;
+	}
+	if (!is_numeric(arg))
+		return (0);
+	if (!ft_atoull(num_start, num))
+		return (0);
+	if (sign_present && *num_start == '\0') //-0とかのちぇっく
+		return (0);
+	return (1);
+}
 
-    // 第1引数を取得
-    j = 0;
-    while (line[i] != '\0' && line[i] != ' ')
-        arg[j++] = line[i++];
-    arg[j] = '\0';
+void	ft_exit(char *line, char *envp[])
+{
+	int					i;
+	char				*arg;
+	int					is_minus;
+	unsigned long long	num;
 
-    // 数値かどうかチェック
-    if (!is_numeric(arg))
-    {
-        printf("bash: exit: %s: numeric argument required\n", arg);
-        exit(2);
-    }
-
-    // 数値を変換
-    value = ft_atoll(arg);
-
-    // 追加の引数があるかチェック
-    while (line[i] == ' ')
-        i++;
-    
-    if (line[i] != '\0')
-    {
-        printf("bash: exit: too many arguments\n");
-        return; // 複数引数ある場合は終了しない
-    }
-
-    // 終了ステータスを計算（0-255の範囲に収める）
-    exit((unsigned char)value);
+	if (strncmp(line, "exit", 4) == 0)
+	{
+		printf("exit\n");
+		i = 4;
+		while (line[i] == ' ')
+			i++;
+		if (line[i] == '\0') // 引数がない場合は通常終了（ステータス0）
+			exit(0);
+		arg = extract_arg(line, &i);
+		is_minus = 0;
+		if (!is_valid_number(arg, &num))
+		{
+			printf("bash: exit: %s: numeric argument required\n", arg);
+			free(arg);
+			exit(2);
+		}
+		if (has_extra_args(line, i))
+		{
+			free(arg);
+			printf("bash: exit: too many arguments\n");
+			return ;
+		}
+		if (arg[0] == '-') //マイナスなら計算式を変える
+			exit(256 - (num % 256) % 256);
+		else
+			exit(num % 256);
+	}
+	else
+		printf("command not found: %s\n", line);
 }
 
 int	main(void)
