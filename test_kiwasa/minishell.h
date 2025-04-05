@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/03 01:13:21 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/06 00:39:28 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,36 +43,28 @@ typedef struct s_token
 	struct s_token		*next;
 }	t_token;
 
-typedef enum e_node_kind
-{
-	ND_SIMPLE_CMD,
-	ND_PIPELINE,
-	ND_REDIRECT,
-}	t_node_kind;
-
+// [fix] parser struct
 typedef enum e_redirect_kind
 {
-	RD_INPUT,
-	RD_OUTPUT,
-	RD_APPEND,
-	RD_HEREDOC,
-}	t_redirect_kind;
+    RD_INPUT,
+    RD_OUTPUT,
+    RD_APPEND,
+    RD_HEREDOC,
+}    t_redirect_kind;
 
 typedef struct s_redirect
 {
-	t_redirect_kind		kind;
-	char				*filename;
-	struct s_redirect	*next;
-}	t_redirect;
+    t_redirect_kind  kind;
+    char             *filename;
+    struct s_redirect    *next;
+}    t_redirect;
 
 typedef struct s_node
 {
-	t_node_kind			kind;
-	char				**command;
-	t_redirect			*redirects;
-	struct s_node		*left;
-	struct s_node		*right;
-}	t_node;
+    char           **command;
+    t_redirect     *redirects;
+    struct s_node  *next;
+}    t_node;
 
 typedef struct s_env
 {
@@ -112,7 +104,6 @@ void		setup_signal(void);
 void		minishell_loop(t_env *env);
 void		unset_env(t_env **env, char *key);
 
-t_node	*new_node(t_node_kind kind);
 void	add_redirect(t_redirect **list, t_redirect *new);
 t_redirect	*new_redirect(t_redirect_kind kind, char *filename);
 t_redirect_kind	get_redirect_kind(t_token *token);

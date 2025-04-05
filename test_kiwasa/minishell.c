@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/04 01:34:37 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/06 00:37:52 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,27 +41,9 @@ static void	process_input(char *line, t_env *env)
 		return ;
 	add_history(line);
 	tokens = tokenize(line);
-	// while (tokens)
-	// {
-	// 	printf("%s\n", tokens->word);
-	// 	tokens = tokens->next;
-	// }
 	node = parse(tokens);
-	// int i;
-	// while (node)
-	// {
-	// 	if(node->command)
-	// 	{
-	// 		i = 0;
-	// 		while(node->command[i])
-	// 		{
-	// 			printf("%s ", node->command[i]);
-	// 			i ++;
-	// 		}
-	// 		write(1, "\n", 1);
-	// 	}
-	// 	node = node->left;
-	// }
+	// stop
+	return;
 	execute(node, env);
 	free_tokens(tokens);
 	free_node(node);
@@ -81,6 +63,8 @@ void	minishell_loop(t_env *env)
 			break ;
 		}
 		process_input(line, env);
+		//stop
+		exit(0);
 		free(line);
 	}
 }
