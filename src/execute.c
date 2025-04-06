@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../inc/minishell.h"
 
 // TK_WORD
 // TK_RESERVED
@@ -98,7 +98,6 @@ int	redirect_append(t_node *node)
 int	redirect_heredoc(t_node *node)
 {
 	int	fd;
-
 	// fd = create_heredoc(node->redirects->filename);
 	fd = 1;
 	return (fd);

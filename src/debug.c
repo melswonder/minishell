@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "../inc/minishell.h"
 
 void	print_node(t_node *node)
 {

@@ -6,11 +6,11 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/06 20:20:07 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/06 20:58:07 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../inc/minishell.h"
 
 volatile sig_atomic_t	g_signal = 0;
 

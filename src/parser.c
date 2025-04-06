@@ -6,11 +6,11 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/06 16:49:14 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/06 20:58:12 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../inc/minishell.h"
 
 t_node	*new_node()
 {

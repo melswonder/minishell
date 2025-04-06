@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/06 17:18:59 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/06 21:04:05 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ void	print_node(t_node *node);
 //--debug
 
 //---buildin---
+int	buildin_branch(t_node *node, t_env *env);
 int buildin_export(void);
 int buildin_unset(void);
 int buildin_exit(void);
