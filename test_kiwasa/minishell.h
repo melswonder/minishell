@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/06 00:39:28 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/06 15:59:16 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,5 +118,9 @@ char	*find_command_path(char *cmd, t_env *env);
 void	execute_child(t_node *node, t_env *env);
 int	apply_redirects(t_redirect *redirects);
 int	execute_simple_command(t_node *node, t_env *env);
+
+//--debug
+void print_tokenize(t_token *token);
+void	print_node(t_node *node);
 
 #endif
