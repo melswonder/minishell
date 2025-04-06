@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/06 15:59:16 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/06 17:18:59 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,5 +122,16 @@ int	execute_simple_command(t_node *node, t_env *env);
 //--debug
 void print_tokenize(t_token *token);
 void	print_node(t_node *node);
+//--debug
 
+//---buildin---
+int buildin_export(void);
+int buildin_unset(void);
+int buildin_exit(void);
+int buildin_echo(void);
+int buildin_pwd(void);
+int buildin_env(void);
+int buildin_cd(void);
+
+//---buildin---
 #endif
