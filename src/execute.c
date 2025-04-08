@@ -45,19 +45,19 @@ int	buildin_branch(t_node *node, t_env *env)
 	while (node->command[i] != NULL)
 	{
 		if (strstr(node->command[i], "echo"))
-			buildin_echo();
+			buildin_echo(node,env);
 		else if (strstr(node->command[i], "exit"))
-			buildin_exit();
+			buildin_exit(node);
 		else if (strstr(node->command[i], "cd"))
-			buildin_cd();
+			buildin_cd(node,env);
 		else if (strstr(node->command[i], "pwd"))
 			buildin_pwd();
 		else if (strstr(node->command[i], "export"))
-			buildin_export();
+			buildin_export(env);
 		else if (strstr(node->command[i], "unset"))
-			buildin_unset();
+			buildin_unset(node,&env);
 		else if (strstr(node->command[i], "env"))
-			buildin_env();
+			buildin_env(env);
 		i++;
 	}
 	return (0);
@@ -272,7 +272,7 @@ void	exec_path_or_exefile(t_node *node, t_env *env)
 	envp = env_to_array(env);
 	if (execve(node->command[0], node->command, envp) == -1)
 	{
-		printf("Command not found: %s\n", node->command[0]); //エラーメッセージ
+		printf("command not found: %s\n", node->command[0]); //エラーメッセージ
 		free_envp(envp);
 	}
 	free_envp(envp);
@@ -324,9 +324,11 @@ int	execute(t_node *node, t_env *env)
 {
 	pid_t	pid;
 	int		status;
-	int		child_count = 0;
+	int		child_count;
 	pid_t	child_pids[100];
+	t_redirect *current;
 
+	child_count = 0;
 	int input_fd, fd_in, fd_out;
 	int stdin_backup, stdout_backup;
 	input_fd = STDIN_FILENO;
@@ -335,18 +337,39 @@ int	execute(t_node *node, t_env *env)
 		fd_in = input_fd; // 以前のコマンドの出力を次の入力に
 		fd_out = STDOUT_FILENO;
 		// リダイレクトが設定されている場合
-		if (node->redirects != NULL) //引数返し
+		if (node->redirects != NULL)
 		{
-			if (node->redirects->kind == RD_INPUT)
-				fd_in = redirect_input(node);
-			else if (node->redirects->kind == RD_HEREDOC)
-				fd_in = redirect_heredoc(node);
-			else if (node->redirects->kind == RD_OUTPUT)
-				fd_out = redirect_output(node);
-			else if (node->redirects->kind == RD_APPEND)
-				fd_out = redirect_append(node);
-			if (fd_in == -1 || fd_out == -1)
-				return (EXIT_FAILURE);
+			current = node->redirects;
+			while (current != NULL)
+			{
+				if (current->kind == RD_INPUT)
+				{
+					if (fd_in != STDIN_FILENO)
+						close(fd_in);
+					fd_in = redirect_input(node);
+				}
+				else if (current->kind == RD_HEREDOC)
+				{
+					if (fd_in != STDIN_FILENO)
+						close(fd_in);
+					fd_in = redirect_heredoc(node);
+				}
+				else if (current->kind == RD_OUTPUT)
+				{
+					if (fd_out != STDOUT_FILENO)
+						close(fd_out);
+					fd_out = redirect_output(node);
+				}
+				else if (current->kind == RD_APPEND)
+				{
+					if (fd_out != STDOUT_FILENO)
+						close(fd_out);
+					fd_out = redirect_append(node);
+				}
+				if (fd_in == -1 || fd_out == -1)
+					return (EXIT_FAILURE);
+				current = current->next;
+			}
 		}
 		// built-in の場合
 		if (is_builtin_command(node->command[0]))
@@ -375,10 +398,12 @@ int	execute(t_node *node, t_env *env)
 			pid = fork();
 			if (pid == 0)
 			{
+				
 				if (fd_in != STDIN_FILENO)
 					dup2(fd_in, STDIN_FILENO);
 				if (fd_out != STDOUT_FILENO)
 					dup2(fd_out, STDOUT_FILENO);
+				
 				execute_nomal(node, env);
 				exit(EXIT_FAILURE);
 			}
@@ -401,9 +426,9 @@ int	execute(t_node *node, t_env *env)
 			input_fd = STDIN_FILENO;
 		node = node->next;
 	}
-	for (int i = 0;i < child_count; i++) //最期のため
+	for (int i = 0; i < child_count; i++) //最期のため
 	{
-		waitpid(child_pids[i], &status, 0);	
+		waitpid(child_pids[i], &status, 0);
 	}
 	return (EXIT_SUCCESS);
 }

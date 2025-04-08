@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/06 17:18:59 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/08 21:35:01 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,13 +125,13 @@ void	print_node(t_node *node);
 //--debug
 
 //---buildin---
-int buildin_export(void);
-int buildin_unset(void);
-int buildin_exit(void);
-int buildin_echo(void);
-int buildin_pwd(void);
-int buildin_env(void);
-int buildin_cd(void);
-
+int	buildin_branch(t_node *node, t_env *env);
+int	buildin_unset(t_node *node, t_env **env);
+int	buildin_echo(t_node *node, t_env *env);
+int	buildin_cd(t_node *node, t_env *env);
+int	buildin_exit(t_node *node);
+int	buildin_export(t_env *env);
+int	buildin_env(t_env *env);
+int	buildin_pwd(void);
 //---buildin---
 #endif
