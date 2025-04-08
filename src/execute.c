@@ -304,12 +304,12 @@ int	execute_nomal(t_node *node, t_env *env)
 			continue ;
 		}
 		printf("Trying: %s\n", cmd_path);
-		if(access(cmd_path,X_OK) == 0)
+		if (access(cmd_path, X_OK) == 0)
 		{
-			if(execve(cmd_path,node->command,envp) == -1)
+			if (execve(cmd_path, node->command, envp) == -1)
 				perror(cmd_path);
 			free(cmd_path);
-			break;
+			break ;
 		}
 		free(cmd_path);
 		i++;
@@ -324,6 +324,8 @@ int	execute(t_node *node, t_env *env)
 {
 	pid_t	pid;
 	int		status;
+	int		child_count = 0;
+	pid_t	child_pids[100];
 
 	int input_fd, fd_in, fd_out;
 	int stdin_backup, stdout_backup;
@@ -333,7 +335,7 @@ int	execute(t_node *node, t_env *env)
 		fd_in = input_fd; // 以前のコマンドの出力を次の入力に
 		fd_out = STDOUT_FILENO;
 		// リダイレクトが設定されている場合
-		if (node->redirects != NULL)
+		if (node->redirects != NULL) //引数返し
 		{
 			if (node->redirects->kind == RD_INPUT)
 				fd_in = redirect_input(node);
@@ -385,10 +387,7 @@ int	execute(t_node *node, t_env *env)
 				perror("fork error");
 				return (EXIT_FAILURE);
 			}
-			else
-			{
-				waitpid(pid, &status, 0);
-			}
+			child_pids[child_count++] = pid;
 			if (fd_in != STDIN_FILENO)
 				close(fd_in);
 			if (fd_out != STDOUT_FILENO)
@@ -401,6 +400,10 @@ int	execute(t_node *node, t_env *env)
 		else
 			input_fd = STDIN_FILENO;
 		node = node->next;
+	}
+	for (int i = 0;i < child_count; i++) //最期のため
+	{
+		waitpid(child_pids[i], &status, 0);	
 	}
 	return (EXIT_SUCCESS);
 }
