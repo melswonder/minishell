@@ -98,6 +98,7 @@ int	redirect_append(t_node *node)
 int	redirect_heredoc(t_node *node)
 {
 	int	fd;
+
 	// fd = create_heredoc(node->redirects->filename);
 	fd = 1;
 	return (fd);
@@ -252,6 +253,31 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (dest);
 }
 
+char	*ft_str_three_join(char const *s1, char const *s2, char const *s3)
+{
+	char	*ret;
+	char	*tmp;
+
+	tmp = ft_strjoin(s1, s2);
+	ret = ft_strjoin(tmp, s3);
+	free(tmp);
+	return (ret);
+}
+
+// unset PATH用の実行
+void	exec_path_or_exefile(t_node *node, t_env *env)
+{
+	char	**envp;
+
+	envp = env_to_array(env);
+	if (execve(node->command[0], node->command, envp) == -1)
+	{
+		printf("Command not found: %s\n", node->command[0]); //エラーメッセージ
+		free_envp(envp);
+	}
+	free_envp(envp);
+}
+
 // execute_nomal: 外部コマンドの実行（PATH 内からコマンドを探す）
 int	execute_nomal(t_node *node, t_env *env)
 {
@@ -260,34 +286,37 @@ int	execute_nomal(t_node *node, t_env *env)
 	char	*cmd_path;
 	char	**envp;
 
-	i = 0;
-	path = path_new(env);
-	if (!path)
+	if (node->command[0][0] == '/' || (node->command[0][0] == '.'
+			&& node->command[0][1] == '/'))
 	{
-		fprintf(stderr, "PATH not found in environment\n");
+		exec_path_or_exefile(node, env);
 		return (0);
 	}
-	envp = env_to_array(env); // 環境変数配列を取得
+	i = 0;
+	path = path_new(env);
+	envp = env_to_array(env);
 	while (path[i])
 	{
-		// path[i] と node->command[0] を連結して、実行可能パスを作成
-		cmd_path = malloc(strlen(path[i]) + strlen(node->command[0]) + 2);
+		cmd_path = ft_str_three_join(path[i], "/", node->command[0]);
 		if (!cmd_path)
 		{
 			i++;
 			continue ;
 		}
-		sprintf(cmd_path, "%s/%s", path[i], node->command[0]);
 		printf("Trying: %s\n", cmd_path);
-		if (execve(cmd_path, node->command, envp) == -1)
+		if(access(cmd_path,X_OK) == 0)
 		{
+			if(execve(cmd_path,node->command,envp) == -1)
+				perror(cmd_path);
 			free(cmd_path);
-			i++;
+			break;
 		}
+		free(cmd_path);
+		i++;
 	}
-	fprintf(stderr, "Command not found: %s\n", node->command[0]);
+	printf("Command not found: %s\n", node->command[0]); // errorcheck
 	free_path(path);
-	free_envp(envp);
+	free_envp(path);
 	return (0);
 }
 
