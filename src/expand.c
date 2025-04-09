@@ -6,15 +6,10 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 04:30:08 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/10 04:36:49 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 04:42:29 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdbool.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
 #include "../inc/minishell.h"
 
 bool	is_alpha_under(char c)

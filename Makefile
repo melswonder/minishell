@@ -3,15 +3,15 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+         #
+#    By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/06 20:58:32 by hirwatan          #+#    #+#              #
-#    Updated: 2025/04/09 20:55:55 by hirwatan         ###   ########.fr        #
+#    Updated: 2025/04/10 04:55:29 by kiwasa           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
-SRCS = src/tokenizer.c src/parser.c src/debug.c src/buildin.c src/minishell.c src/execute.c
+SRCS = src/tokenizer.c src/parser.c src/debug.c src/buildin.c src/minishell.c src/execute.c src/expand.c
 OBJS = $(SRCS:.c=.o)
 CC = cc
 CFLAGS =

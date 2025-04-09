@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/06 20:58:07 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/10 05:07:55 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,18 +32,36 @@ void	setup_signal(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
+void	init_shell(t_shell *shell, t_node *node, t_env *env)
+{
+	shell->env = env;
+	shell->head = NULL;
+	shell->syntax_error = false;
+	shell->status = 0;
+}
+
 static void	process_input(char *line, t_env *env)
 {
 	t_token	*tokens;
 	t_node	*node;
+	t_shell	*shell;
 
 	if (line[0] == '\0')
 		return ;
 	add_history(line);
-	tokens = tokenize(line);
-	node = parse(tokens);
+	init_shell(shell, node, env);
+	tokens = tokenize(line, shell);
+	node = parse(tokens, shell);
+	if (shell->syntax_error)
+	{
+		shell->status = 2;
+		printf("syntax_error ");
+		return ;
+	}
 	print_node(node); // debug　nodeを全部プリントする関数
-	// stop
+	shell->head = node;
+	expand_variable(shell);
+	print_node(node);
 	execute(node, env);
 	return ;
 	free_tokens(tokens);
@@ -72,7 +90,7 @@ void	minishell_loop(t_env *env)
 
 t_env	*init_env(char **envp)
 {
-    t_env	*head = NULL;
+	t_env	*head = NULL;
     t_env	*tail = NULL;
     t_env	*new_node;
     int		i;

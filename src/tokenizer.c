@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/06 20:58:15 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/10 04:51:09 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ static t_token	*tokenize_reserved(char **line)
 	return (token);
 }
 
-static char	*extract_word(char **line)
+static char	*extract_word(char **line, t_shell *shell)
 {
 	char	*start;
 	char	quote;
@@ -96,6 +96,10 @@ static char	*extract_word(char **line)
 	len = *line - start;
 	if (len == 0)
 		return (NULL);
+	if (quote != '\0')
+	{
+		shell->syntax_error = true;
+	}
 	word = malloc(len + 1);
 	if (!word)
 		return (NULL);
@@ -104,12 +108,12 @@ static char	*extract_word(char **line)
 	return (word);
 }
 
-static t_token	*tokenize_word(char **line)
+static t_token	*tokenize_word(char **line, t_shell *shell)
 {
 	t_token	*token;
 	char	*word;
 
-	word = extract_word(line);
+	word = extract_word(line, shell);
 	if (!word)
 		return (NULL);
 	token = new_token(TK_WORD, word);
@@ -117,7 +121,7 @@ static t_token	*tokenize_word(char **line)
 	return (token);
 }
 
-t_token	*tokenize(char *line)
+t_token	*tokenize(char *line, t_shell *shell)
 {
 	t_token	*tokens;
 	t_token	*new;
@@ -137,7 +141,7 @@ t_token	*tokenize(char *line)
 				add_token(&tokens, new);
 			continue ;
 		}
-		new = tokenize_word(&line);
+		new = tokenize_word(&line, shell);
 		if (new)
 			add_token(&tokens, new);
 	}

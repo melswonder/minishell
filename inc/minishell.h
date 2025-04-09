@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 04:28:56 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 04:56:30 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MINISHELL_H
 
 # include <stdio.h>
+# include <stdbool.h>
 # include <stdlib.h>
 # include <unistd.h>
 # include <string.h>
@@ -26,6 +27,8 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <errno.h>
+#include <ctype.h>
+
 
 #define SINGLE_QUOTE_CHAR '\''
 #define DOUBLE_QUOTE_CHAR '"'
@@ -80,14 +83,14 @@ typedef struct s_shell
 {
     t_env   *env;
     t_node  *head;
-    // bool    syntax_error;
+    bool    syntax_error;
     int     status;
 }   t_shell;
 
-t_token		*tokenize(char *line);
+t_token		*tokenize(char *line, t_shell *shell);
 void		free_tokens(t_token *tokens);
 
-t_node		*parse(t_token *tokens);
+t_node		*parse(t_token *tokens, t_shell *shell);
 void		free_node(t_node *node);
 
 int			execute(t_node *node, t_env *env);
@@ -148,4 +151,8 @@ int	buildin_pwd(void);
 //---expand---
 void expand_variable(t_shell *shell);
 //---expand---
+
+//---print_node---
+void	print_node(t_node *node);
+//---print_node---
 #endif
