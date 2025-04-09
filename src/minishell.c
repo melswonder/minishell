@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 05:07:55 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 05:47:34 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,17 @@ void	init_shell(t_shell *shell, t_node *node, t_env *env)
 	shell->status = 0;
 }
 
+bool	check_syntax_error(t_shell *shell)
+{
+	if (shell->syntax_error)
+	{
+		shell->status = 2;
+		printf("syntax_error near unexpected token `|'\n");
+		return (true);
+	}
+	return (false);
+}
+
 static void	process_input(char *line, t_env *env)
 {
 	t_token	*tokens;
@@ -52,14 +63,9 @@ static void	process_input(char *line, t_env *env)
 	init_shell(shell, node, env);
 	tokens = tokenize(line, shell);
 	node = parse(tokens, shell);
-	if (shell->syntax_error)
-	{
-		shell->status = 2;
-		printf("syntax_error ");
+	if (check_syntax_error(shell))
 		return ;
-	}
-	print_node(node); // debug　nodeを全部プリントする関数
-	shell->head = node;
+	print_node(node);
 	expand_variable(shell);
 	print_node(node);
 	execute(node, env);
@@ -90,49 +96,51 @@ void	minishell_loop(t_env *env)
 
 t_env	*init_env(char **envp)
 {
-	t_env	*head = NULL;
-    t_env	*tail = NULL;
-    t_env	*new_node;
-    int		i;
-    char	*equal_sign;
-    char	*key;
-    char	*value;
+	t_env	*head;
+	t_env	*tail;
+	t_env	*new_node;
+	int		i;
+	char	*equal_sign;
+	char	*key;
+	char	*value;
 
-    i = 0;
-    while (envp[i])
-    {
-        new_node = malloc(sizeof(t_env));
-        if (!new_node)
-            return (NULL); // エラー時は必要に応じてリスト全体の解放処理を追加
-        // envp[i]から '=' の位置を探す
-        equal_sign = strchr(envp[i], '=');
-        if (equal_sign)
-        {
-            // key は '=' の左側、value は '=' の右側
-            key = strndup(envp[i], equal_sign - envp[i]);
-            value = strdup(equal_sign + 1);
-        }
-        else
-        {
-            key = strdup(envp[i]);
-            value = strdup("");
-        }
-        new_node->key = key;
-        new_node->value = value;
-        new_node->next = NULL;
-        if (!head)
-        {
-            head = new_node;
-            tail = new_node;
-        }
-        else
-        {
-            tail->next = new_node;
-            tail = new_node;
-        }
-        i++;
-    }
-    return (head);
+	head = NULL;
+	tail = NULL;
+	i = 0;
+	while (envp[i])
+	{
+		new_node = malloc(sizeof(t_env));
+		if (!new_node)
+			return (NULL); // エラー時は必要に応じてリスト全体の解放処理を追加
+		// envp[i]から '=' の位置を探す
+		equal_sign = strchr(envp[i], '=');
+		if (equal_sign)
+		{
+			// key は '=' の左側、value は '=' の右側
+			key = strndup(envp[i], equal_sign - envp[i]);
+			value = strdup(equal_sign + 1);
+		}
+		else
+		{
+			key = strdup(envp[i]);
+			value = strdup("");
+		}
+		new_node->key = key;
+		new_node->value = value;
+		new_node->next = NULL;
+		if (!head)
+		{
+			head = new_node;
+			tail = new_node;
+		}
+		else
+		{
+			tail->next = new_node;
+			tail = new_node;
+		}
+		i++;
+	}
+	return (head);
 }
 
 void	free_env(t_env *env)

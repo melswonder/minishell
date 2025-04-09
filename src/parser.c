@@ -6,13 +6,13 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/10 05:10:26 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 05:33:13 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/minishell.h"
 
-t_node	*new_node()
+t_node	*new_node(void)
 {
 	t_node	*node;
 
@@ -101,7 +101,7 @@ int	count_command_words(t_token *token)
 
 char	**create_command_array(t_token *token, int count)
 {
-	char 	**command;
+	char	**command;
 	int		i;
 
 	i = 0;
@@ -129,8 +129,8 @@ char	**create_command_array(t_token *token, int count)
 
 t_token	*handle_command(t_node	*node, t_token *token)
 {
-	int	 count;
-	char **command;
+	int		count;
+	char	**command;
 
 	count = count_command_words(token);
 	if (!count)
@@ -189,7 +189,7 @@ t_node	*parse_command_node(t_token **token_ptr, t_shell *shell)
 	while (token != NULL && token->kind == TK_RESERVED)
 	{
 		if (strcmp(token->word, "|") == 0)
-			break;
+			break ;
 		token = handle_redirect(node, token, shell);
 		if (!token)
 		{
@@ -243,19 +243,21 @@ static t_node	*parse_pipeline(t_token **token, t_shell *shell)
 		current = next_node;
 		if (*token != NULL && strcmp((*token)->word, "|") == 0)
 		{
-			if ((*token)->next->word && (strcmp((*token)->next->word, "|") == 0))
-            {
-                shell->syntax_error = true;
-                return (NULL);
-            }
-			else if((*token)->next->kind == TK_EOF)
+			if ((*token)->next->word && \
+					(strcmp((*token)->next->word, "|") == 0))
 			{
 				shell->syntax_error = true;
-                return (NULL);
+				return (NULL);
+			}
+			else if ((*token)->next->kind == TK_EOF)
+			{
+				shell->syntax_error = true;
+				return (NULL);
 			}
 			*token = (*token)->next;
 		}
 	}
+	shell->head = head;
 	return (head);
 }
 
@@ -263,7 +265,6 @@ t_node	*parse(t_token *tokens, t_shell *shell)
 {
 	if (!tokens || tokens->kind == TK_EOF)
 	{
-		// executorの処理によって戻り値、freeを考える
 		return (NULL);
 	}
 	return (parse_pipeline(&tokens, shell));
