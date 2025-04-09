@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/09 18:21:35 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/10 04:28:56 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,9 @@
 # include <readline/history.h>
 # include <signal.h>
 # include <errno.h>
+
+#define SINGLE_QUOTE_CHAR '\''
+#define DOUBLE_QUOTE_CHAR '"'
 
 extern volatile sig_atomic_t	g_signal;
 
@@ -72,6 +75,14 @@ typedef struct s_env
 	char				*value;
 	struct s_env		*next;
 }	t_env;
+
+typedef struct s_shell
+{
+    t_env   *env;
+    t_node  *head;
+    // bool    syntax_error;
+    int     status;
+}   t_shell;
 
 t_token		*tokenize(char *line);
 void		free_tokens(t_token *tokens);
@@ -133,4 +144,8 @@ int	buildin_export(t_env *env);
 int	buildin_env(t_env *env);
 int	buildin_pwd(void);
 //---buildin---
+
+//---expand---
+void expand_variable(t_shell *shell);
+//---expand---
 #endif
