@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/10 04:51:09 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 05:13:40 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,9 +97,7 @@ static char	*extract_word(char **line, t_shell *shell)
 	if (len == 0)
 		return (NULL);
 	if (quote != '\0')
-	{
 		shell->syntax_error = true;
-	}
 	word = malloc(len + 1);
 	if (!word)
 		return (NULL);
