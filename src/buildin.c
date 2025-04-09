@@ -191,8 +191,9 @@ int	buildin_exit(t_node *node)
 {
 	char				*arg;
 	unsigned long long	num;
+	int					i;
 
-	int i = 0;
+	i = 0;
 	printf("exit\n");
 	if (node->command[1] == NULL) // 引数なしなら exit(0)
 		exit(0);
@@ -257,6 +258,30 @@ int	elements_check(char **str)
 	return (0);
 }
 
+char	*str_substitution(char const *ret, char  const *rep)
+{
+	free(ret);
+	ret = malloc(sizeof(char *) * ft_strlen(rep) + 1);
+	ret = ft_strjoin(ret, rep);
+	return (ret);
+}
+
+int	set_to_env_value(t_env *env, char *key, char *set_value)
+{
+	t_env	*tmp;
+
+	while (tmp)
+	{
+		if (strcmp(env->key, key) == 0)
+		{
+			str_substitution(env->value, set_value);
+			return (0);
+		}
+		tmp = tmp->next;
+	}
+	return (1);
+}
+
 int	buildin_cd(t_node *node, t_env *env)
 {
 	char	*home;
@@ -282,6 +307,7 @@ int	buildin_cd(t_node *node, t_env *env)
 			printf("bash: cd: %s: No such file or directory\n",
 				node->command[1]);
 	}
+	set_to_env_value(env, "OLDPWD", node->command[1]);
 	return (0);
 }
 

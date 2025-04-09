@@ -3,6 +3,21 @@
 // TK_WORD
 // TK_RESERVED
 // TK_EOF
+int	ft_pipecount(t_node *node)
+{
+	t_node	*tmp;
+	int		count;
+
+	count = 0;
+	tmp = node;
+	while (tmp)
+	{
+		if (strcmp(tmp->command[0], "|") == 0)
+			count++;
+		tmp = tmp->next;
+	}
+	return (count);
+}
 
 int	count_commad(t_node *node)
 {
@@ -20,6 +35,8 @@ int	count_commad(t_node *node)
 
 int	is_builtin_command(char *str)
 {
+	if (!str)
+		return (0);
 	if (strcmp(str, "echo") == 0)
 		return (1);
 	else if (strcmp(str, "exit") == 0)
@@ -39,63 +56,68 @@ int	is_builtin_command(char *str)
 
 int	buildin_branch(t_node *node, t_env *env)
 {
-	int	i;
+	char	*cmd;
 
-	i = 0;
-	while (node->command[i] != NULL)
-	{
-		if (strstr(node->command[i], "echo"))
-			buildin_echo(node,env);
-		else if (strstr(node->command[i], "exit"))
-			buildin_exit(node);
-		else if (strstr(node->command[i], "cd"))
-			buildin_cd(node,env);
-		else if (strstr(node->command[i], "pwd"))
-			buildin_pwd();
-		else if (strstr(node->command[i], "export"))
-			buildin_export(env);
-		else if (strstr(node->command[i], "unset"))
-			buildin_unset(node,&env);
-		else if (strstr(node->command[i], "env"))
-			buildin_env(env);
-		i++;
-	}
-	return (0);
+	cmd = node->command[0];
+	if (strcmp(cmd, "echo") == 0)
+		return (buildin_echo(node, env));
+	else if (strcmp(cmd, "exit") == 0)
+		return (buildin_exit(node));
+	else if (strcmp(cmd, "cd") == 0)
+		return (buildin_cd(node, env));
+	else if (strcmp(cmd, "pwd") == 0)
+		return (buildin_pwd());
+	else if (strcmp(cmd, "export") == 0)
+		return (buildin_export(env));
+	else if (strcmp(cmd, "unset") == 0)
+		return (buildin_unset(node, &env));
+	else if (strcmp(cmd, "env") == 0)
+		return (buildin_env(env));
+	return (1);
 }
 
 //---redirect---
-int	redirect_input(t_node *node)
+int	redirect_input(t_redirect *redirect)
 {
 	int	fd;
 
-	if (access(node->redirects->filename, F_OK) != 0)
+	// filenameの存在チェック
+	if (!redirect->filename)
 	{
-		perror("file not found");
+		fprintf(stderr, "syntax error near unexpected token `newline'\n");
 		return (-1);
 	}
-	if (access(node->redirects->filename, R_OK) != 0)
+	if (access(redirect->filename, F_OK) != 0)
 	{
-		perror("file not found");
+		printf("bash: %s: No such file or directory\n", redirect->filename);
 		return (-1);
 	}
-	fd = open(node->redirects->filename, O_RDONLY);
+	if (access(redirect->filename, R_OK) != 0)
+	{
+		printf("bash: %s: Permission denied\n", redirect->filename);
+		return (-1);
+	}
+	fd = open(redirect->filename, O_RDONLY);
 	return (fd);
 }
-int	redirect_output(t_node *node)
+
+// 同様に他のリダイレクト関数も修正
+int	redirect_output(t_redirect *redirect)
 {
 	int	fd;
 
-	fd = open(node->redirects->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	fd = open(redirect->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	return (fd);
 }
-int	redirect_append(t_node *node)
+
+int	redirect_append(t_redirect *redirect)
 {
 	int	fd;
 
-	fd = open(node->redirects->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	fd = open(redirect->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	return (fd);
 }
-int	redirect_heredoc(t_node *node)
+int	redirect_heredoc(t_redirect *redirect)
 {
 	int	fd;
 
@@ -286,6 +308,11 @@ int	execute_nomal(t_node *node, t_env *env)
 	char	*cmd_path;
 	char	**envp;
 
+	if (!node->command || !node->command[0])
+	{
+		printf("bash: command not found\n");
+		return (EXIT_FAILURE);
+	}
 	if (node->command[0][0] == '/' || (node->command[0][0] == '.'
 			&& node->command[0][1] == '/'))
 	{
@@ -314,31 +341,74 @@ int	execute_nomal(t_node *node, t_env *env)
 		free(cmd_path);
 		i++;
 	}
-	printf("Command not found: %s\n", node->command[0]); // errorcheck
+	printf("command not found: %s\n", node->command[0]); // errorcheck
 	free_path(path);
-	free_envp(path);
+	free_envp(envp);
 	return (0);
 }
 
-int	execute(t_node *node, t_env *env)
+int	exec_command_get_fd(t_node *node, t_env *env, int input_fd)
 {
+	int		curr_pipe[2];
 	pid_t	pid;
-	int		status;
-	int		child_count;
-	pid_t	child_pids[100];
-	t_redirect *current;
 
-	child_count = 0;
-	int input_fd, fd_in, fd_out;
-	int stdin_backup, stdout_backup;
+	if (pipe(curr_pipe) == -1)
+		exit(EXIT_FAILURE);
+	pid = fork();
+	if (pid == -1)
+		exit(EXIT_FAILURE);
+	if (pid == 0)
+	{
+		if (dup2(input_fd, STDIN_FILENO) == -1)
+			exit(EXIT_FAILURE);
+		if (dup2(curr_pipe[1], STDOUT_FILENO) == -1)
+			exit(EXIT_FAILURE);
+		close(curr_pipe[0]);
+		close(curr_pipe[1]);
+		execute_nomal(node, env);
+		exit(EXIT_FAILURE);
+	}
+	close(input_fd);
+	close(curr_pipe[1]);
+	return (curr_pipe[0]);
+}
+
+int	execute_pipeline(t_node *node, t_env *env)
+{
+	int			pipefd[2];
+	pid_t		pid;
+	int			status;
+	int			input_fd;
+	int			fd_in;
+	int			fd_out;
+	t_redirect	*current;
+
+	fd_in = STDIN_FILENO;
+	fd_out = STDOUT_FILENO;
 	input_fd = STDIN_FILENO;
 	while (node)
 	{
-		fd_in = input_fd; // 以前のコマンドの出力を次の入力に
-		fd_out = STDOUT_FILENO;
-		// リダイレクトが設定されている場合
-		if (node->redirects != NULL)
+		if (node->next)
 		{
+			if (pipe(pipefd) < 0)
+				exit(EXIT_FAILURE);
+		}
+		pid = fork();
+		if (pid < 0)
+			exit(EXIT_FAILURE);
+		if (pid == 0)
+		{
+			if (input_fd != STDIN_FILENO)
+			{
+				dup2(input_fd, STDIN_FILENO);
+				close(input_fd);
+			}
+			if (node->next)
+			{
+				close(pipefd[0]);
+				dup2(pipefd[1], STDOUT_FILENO);
+				close(pipefd[1]);
+			}
 			current = node->redirects;
 			while (current != NULL)
 			{
@@ -346,89 +416,167 @@ int	execute(t_node *node, t_env *env)
 				{
 					if (fd_in != STDIN_FILENO)
 						close(fd_in);
-					fd_in = redirect_input(node);
+					fd_in = redirect_input(current); // currentを引数に
+					if (fd_in != -1)
+					{
+						dup2(fd_in, STDIN_FILENO);
+						close(fd_in);
+						fd_in = STDIN_FILENO; // 既にdup2したので標準入力になった
+					}
 				}
 				else if (current->kind == RD_HEREDOC)
 				{
 					if (fd_in != STDIN_FILENO)
 						close(fd_in);
-					fd_in = redirect_heredoc(node);
+					fd_in = redirect_heredoc(current);
+					if (fd_in != -1)
+					{
+						dup2(fd_in, STDIN_FILENO);
+						close(fd_in);
+						fd_in = STDIN_FILENO;
+					}
 				}
 				else if (current->kind == RD_OUTPUT)
 				{
 					if (fd_out != STDOUT_FILENO)
 						close(fd_out);
-					fd_out = redirect_output(node);
+					fd_out = redirect_output(current);
+					if (fd_out != -1)
+					{
+						dup2(fd_out, STDOUT_FILENO);
+						close(fd_out);
+						fd_out = STDOUT_FILENO;
+					}
 				}
 				else if (current->kind == RD_APPEND)
 				{
 					if (fd_out != STDOUT_FILENO)
 						close(fd_out);
-					fd_out = redirect_append(node);
+					fd_out = redirect_append(current);
+					if (fd_out != -1)
+					{
+						dup2(fd_out, STDOUT_FILENO);
+						close(fd_out);
+						fd_out = STDOUT_FILENO;
+					}
 				}
 				if (fd_in == -1 || fd_out == -1)
 					return (EXIT_FAILURE);
 				current = current->next;
 			}
+			if (is_builtin_command(node->command[0]))
+				buildin_branch(node, env);
+			else
+				execute_nomal(node, env);
+			exit(EXIT_SUCCESS);
 		}
-		// built-in の場合
+		if (input_fd != STDIN_FILENO)
+			close(input_fd);
+		if (node->next)
+		{
+			close(pipefd[1]);
+			input_fd = pipefd[0];
+		}
+		node = node->next;
+	}
+	while (wait(NULL) > 0)
+		;
+	return (EXIT_SUCCESS);
+}
+
+int	execute(t_node *node, t_env *env)
+{
+	int			input_fd;
+	int			output_fd;
+	t_redirect	*current;
+	int			stdin_backup;
+	int			stdout_backup;
+	pid_t		pid;
+	int			status;
+
+	if (!node->command || !node->command[0])
+		return (EXIT_FAILURE);
+	if (node->next != NULL)
+		execute_pipeline(node, env);
+	else
+	{
+		input_fd = STDIN_FILENO;
+		output_fd = STDOUT_FILENO;
+		current = node->redirects;
+		while (current != NULL)
+		{
+			if (current->kind == RD_INPUT)
+			{
+				if (input_fd != STDIN_FILENO)
+					close(input_fd);
+				input_fd = redirect_input(current);
+			}
+			else if (current->kind == RD_HEREDOC)
+			{
+				if (input_fd != STDIN_FILENO)
+					close(input_fd);
+				input_fd = redirect_heredoc(current);
+			}
+			else if (current->kind == RD_OUTPUT)
+			{
+				if (output_fd != STDOUT_FILENO)
+					close(output_fd);
+				output_fd = redirect_output(current);
+			}
+			else if (current->kind == RD_APPEND)
+			{
+				if (output_fd != STDOUT_FILENO)
+					close(output_fd);
+				output_fd = redirect_append(current);
+			}
+			if (input_fd == -1 || output_fd == -1)
+				return (EXIT_FAILURE);
+			if(input_fd != STDIN_FILENO)
+				dup2(input_fd,STDIN_FILENO);
+			current = current->next;
+		}
 		if (is_builtin_command(node->command[0]))
 		{
-			// 標準入出力のバックアップに正しいfdを使用する
+			// 標準入出力のバックアップ
 			stdin_backup = dup(STDIN_FILENO);
 			stdout_backup = dup(STDOUT_FILENO);
-			if (fd_in != STDIN_FILENO)
-			{
-				dup2(fd_in, STDIN_FILENO);
-				close(fd_in);
-			}
-			if (fd_out != STDOUT_FILENO)
-			{
-				dup2(fd_out, STDOUT_FILENO);
-				close(fd_out);
-			}
+			// リダイレクト適用
+			if (input_fd != STDIN_FILENO)
+				dup2(input_fd, STDIN_FILENO);
+			if (output_fd != STDOUT_FILENO)
+				dup2(output_fd, STDOUT_FILENO);
+			// ビルトイン実行
 			buildin_branch(node, env);
+			// 標準入出力を元に戻す
 			dup2(stdin_backup, STDIN_FILENO);
 			dup2(stdout_backup, STDOUT_FILENO);
 			close(stdin_backup);
 			close(stdout_backup);
 		}
-		else // 外部コマンドの場合
+		else // 外部コマンド
 		{
 			pid = fork();
 			if (pid == 0)
 			{
-				
-				if (fd_in != STDIN_FILENO)
-					dup2(fd_in, STDIN_FILENO);
-				if (fd_out != STDOUT_FILENO)
-					dup2(fd_out, STDOUT_FILENO);
-				
+				// リダイレクト適用
+				if (input_fd != STDIN_FILENO)
+					dup2(input_fd, STDIN_FILENO);
+				if (output_fd != STDOUT_FILENO)
+					dup2(output_fd, STDOUT_FILENO);
+				// コマンド実行
 				execute_nomal(node, env);
 				exit(EXIT_FAILURE);
 			}
-			else if (pid < 0)
+			else
 			{
-				perror("fork error");
-				return (EXIT_FAILURE);
+				waitpid(pid, &status, 0);
 			}
-			child_pids[child_count++] = pid;
-			if (fd_in != STDIN_FILENO)
-				close(fd_in);
-			if (fd_out != STDOUT_FILENO)
-				close(fd_out);
 		}
-		// 出力リダイレクトがあれば、次のコマンドの入力として引き継ぐ
-		if (node->redirects != NULL && (node->redirects->kind == RD_OUTPUT
-				|| node->redirects->kind == RD_APPEND))
-			input_fd = fd_out;
-		else
-			input_fd = STDIN_FILENO;
-		node = node->next;
-	}
-	for (int i = 0; i < child_count; i++) //最期のため
-	{
-		waitpid(child_pids[i], &status, 0);
+		// FDのクリーンアップ
+		if (input_fd != STDIN_FILENO)
+			close(input_fd);
+		if (output_fd != STDOUT_FILENO)
+			close(output_fd);
 	}
 	return (EXIT_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/08 21:35:01 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/09 18:21:35 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,12 +119,11 @@ void	execute_child(t_node *node, t_env *env);
 int	apply_redirects(t_redirect *redirects);
 int	execute_simple_command(t_node *node, t_env *env);
 
-//--debug
-void print_tokenize(t_token *token);
-void	print_node(t_node *node);
-//--debug
+//--debugchar	*ft_strjoin(char *s1, char *s2)
 
 //---buildin---
+
+char	*ft_strjoin(char const*s1, char const *s2);
 int	buildin_branch(t_node *node, t_env *env);
 int	buildin_unset(t_node *node, t_env **env);
 int	buildin_echo(t_node *node, t_env *env);
