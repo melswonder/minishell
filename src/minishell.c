@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 16:05:11 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/10 20:36:48 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ bool	check_syntax_error(t_shell *shell)
 	if (shell->syntax_error)
 	{
 		shell->status = 2;
-		printf("syntax_error near unexpected token `|'\n");
+		printf("syntax_error near unexpected token `  '\n");
 		return (true);
 	}
 	return (false);
@@ -60,17 +60,24 @@ static void	process_input(char *line, t_env *env)
 	if (line[0] == '\0')
 		return ;
 	add_history(line);
+	shell = (t_shell *)malloc(sizeof(t_shell));
+    if (!shell)
+        return;
 	init_shell(shell, node, env);
 	tokens = tokenize(line, shell);
 	node = parse(tokens, shell);
 	if (check_syntax_error(shell))
+	{
+		free(shell);
+		free(tokens);
 		return ;
+	}
 	expand_variable(shell);
 	print_node(shell->head);
 	execute(shell);
-	return ;
 	free_tokens(tokens);
-	free_node(node);
+	free_all_nodes(shell->head);
+	free(shell);
 }
 
 void	minishell_loop(t_env *env)
@@ -89,7 +96,7 @@ void	minishell_loop(t_env *env)
 		process_input(line, env);
 		// stop
 		// exit(0);
-		// free(line);
+		free(line);
 	}
 }
 
