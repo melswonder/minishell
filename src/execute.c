@@ -31,7 +31,7 @@ int	buildin_branch(t_node *node, t_env *env)
 
 	cmd = node->command[0];
 	if (strcmp(cmd, "echo") == 0)
-		return (buildin_echo(node, env));
+		return (buildin_echo(node));
 	else if (strcmp(cmd, "exit") == 0)
 		return (buildin_exit(node));
 	else if (strcmp(cmd, "cd") == 0)
@@ -39,7 +39,7 @@ int	buildin_branch(t_node *node, t_env *env)
 	else if (strcmp(cmd, "pwd") == 0)
 		return (buildin_pwd());
 	else if (strcmp(cmd, "export") == 0)
-		return (buildin_export(env));
+		return (buildin_export(node,env));
 	else if (strcmp(cmd, "unset") == 0)
 		return (buildin_unset(node, &env));
 	else if (strcmp(cmd, "env") == 0)
@@ -352,6 +352,11 @@ int	execute_nomal(t_node *node, t_env *env)
 	}
 	i = 0;
 	path = path_new(env);
+	// if(!path)
+	// {
+	// 	printf("command not found: %s\n", node->command[0]);
+	// 	return (127);
+	// }
 	envp = env_to_array(env);
 	while (path[i])
 	{

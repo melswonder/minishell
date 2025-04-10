@@ -17,79 +17,45 @@ int	ft_strlen(char *str)
 	return (i);
 }
 
-char	*get_env_value(t_env *env, char *key)
-{
-	int	var_len;
-
-	var_len = ft_strlen(key);
-	while (env)
-	{
-		if ((ft_strlen(env->key) == var_len) && (strncmp(env->key, key,
-					var_len) == 0))
-			return (env->value);
-		env = env->next;
-	}
-	return ("");
-}
-
 int	option_check(char *str)
 {
 	int	i;
 
-	i = 0;
+	if (!str)
+		return (0);
+	if (str[i] != '-')
+		return (0);
+	i = 1;
 	while (str[i] != '\0')
 	{
-		if (str[i] == '-' && str[i + 1] == 'n')
-			return (1);
+		if (str[i] != 'n')
+			return (0);
 		i++;
 	}
-	return (0);
+	if (i == 1)
+		return (0);
+	return (1);
 }
 
-int	buildin_echo(t_node *node, t_env *env)
+int	buildin_echo(t_node *node)
 {
-	int		i;
-	int		var_pos;
-	int		in_squote;
-	int		in_dquote;
-	char	var_name[256];
-	int		new_line;
+	int	i;
+	int	var_pos;
+	int	new_line;
 
+	i = 1;
 	new_line = 1;
-	if (option_check(node->command[0]))
-		new_line = 0;
-	i = 4; // "echo" の後ろから開始
-	while (node->command[0][i] == ' ')
-		i++;
-	in_dquote = 0;
-	in_squote = 0;
-	while (node->command[0][i])
+	if (option_check(node->command[1]))
 	{
-		if (node->command[0][i] == '"' && !in_squote)
-		{
-			in_dquote = !in_dquote;
-			i++;
-			continue ;
-		}
-		else if (node->command[0][i] == '\'' && !in_dquote)
-		{
-			in_squote = !in_squote;
-			i++;
-			continue ;
-		}
-		else if (node->command[0][i] == '$' && !in_squote)
-		{
-			i++;
-			var_pos = 0;
-			while (node->command[0][i] && (isalnum(node->command[0][i])
-					|| node->command[0][i] == '_'))
-				var_name[var_pos++] = node->command[0][i++];
-			var_name[var_pos] = '\0';
-			if (var_pos > 0)
-				printf("%s", get_env_value(env, var_name));
-			continue ;
-		}
-		printf("%c", node->command[0][i++]);
+		new_line = 0;
+		i++;
+	}
+	while (node->command[i] != NULL)
+	{
+		printf("%s", node->command[i]);
+		if (node->command[i + 1] != NULL)
+			printf(" ");
+		i++;
 	}
 	if (new_line)
 		printf("\n");
@@ -216,6 +182,7 @@ int	buildin_exit(t_node *node)
 		exit(num % 256);
 	return (0);
 }
+//---exit---
 
 //---cd---
 char	*ft_getenv(char *str, t_env *env)
@@ -258,7 +225,7 @@ int	elements_check(char **str)
 	return (0);
 }
 
-char	*str_substitution(char const *ret, char  const *rep)
+char	*str_substitution(char const *ret, char const *rep)
 {
 	free(ret);
 	ret = malloc(sizeof(char *) * ft_strlen(rep) + 1);
@@ -310,7 +277,9 @@ int	buildin_cd(t_node *node, t_env *env)
 	set_to_env_value(env, "OLDPWD", node->command[1]);
 	return (0);
 }
+//---cd---
 
+//---pwd---
 int	buildin_pwd(void)
 {
 	char	cwd[1024];
@@ -321,27 +290,289 @@ int	buildin_pwd(void)
 		perror("getcwd error");
 	return (0);
 }
+//---pwd---
 
-int	buildin_export(t_env *env)
+//---export---
+char	*ft_strjoin_safe(char *s1, char *s2)
 {
+	char	*result;
+	size_t	len1;
+	size_t	len2;
+
+	if (!s1)
+		s1 = "";
+	if (!s2)
+		s2 = "";
+	len1 = strlen(s1);
+	len2 = strlen(s2);
+	result = malloc(len1 + len2 + 1);
+	if (!result)
+		return (NULL);
+	strcpy(result, s1);
+	strcat(result, s2);
+	return (result);
+}
+
+// 変数名が有効化(alpha number '_')
+int	is_valid_varname(char *name)
+{
+	int	i;
+
+	if (!name || name[0] == '\0')
+		return (0);
+	if (!isalpha(name[0]) && name[0] != '_')
+		return (0);
+	i = 1;
+	while (name[i] && name[i] != '=' && !(name[i] == '+' && name[i + 1] == '='))
+	{
+		if (!isalnum(name[i]) && name[i] != '_')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+// NAME=value
+int	is_addition(char *arguments)
+{
+	int	i;
+
+	if (!arguments)
+		return (0);
+	i = 0;
+	while (arguments[i])
+	{
+		if (arguments[i] == '=' && (i == 0 || arguments[i - 1] != '+'))
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+// NAME+=value 形式かチェック
+int	is_appending(char *arguments)
+{
+	int	i;
+
+	if (!arguments)
+		return (0);
+	i = 0;
+	while (arguments[i])
+	{
+		if (arguments[i] == '+' && arguments[i + 1] == '=')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+t_env	*find_env(t_env *env, char *key)
+{
+	t_env	*current;
+
+	current = env;
+	while (current)
+	{
+		if (strcmp(current->key, key) == 0)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
+}
+
+int	add_env(t_env *env, t_env *new_node)
+{
+	t_env	*last;
+
+	if (!env)
+		return (1);
+	last = env;
+	while (last->next)
+		last = last->next;
+	last->next = new_node;
+	return (0);
+}
+
+// NAME=value 形式の環境変数を追加または更新
+t_env	*create_env_node(char *key, char *value)
+{
+	t_env	*new_node;
+
+	new_node = malloc(sizeof(t_env));
+	if (!new_node)
+	{
+		free(key);
+		free(value);
+		return (NULL);
+	}
+	new_node->key = key;
+	new_node->value = value;
+	new_node->next = NULL;
+	return (new_node);
+}
+
+// NAME=value 形式の環境変数を追加または更新
+void	env_addition(char *arguments, t_env *env)
+{
+	char	*key;
+	char	*value;
+	t_env	*existing;
+	t_env	*new_node;
+	char	*equal_pos;
+
+	equal_pos = strchr(arguments, '=');
+	if (!equal_pos)
+		return ;
+	key = strndup(arguments, equal_pos - arguments);
+	value = strdup(equal_pos + 1);
+	if (!is_valid_varname(key))
+	{
+		printf("export: '%s': not a valid identifier\n", arguments);
+		free(key);
+		free(value);
+		return ;
+	}
+	existing = find_env(env, key);
+	if (existing)
+	{
+		free(existing->value);
+		existing->value = value;
+		free(key);
+		return ;
+	}
+	new_node = create_env_node(key, value);
+	if (new_node)
+		add_env(env, new_node);
+}
+
+// NAME+=value 形式の環境変数を追記
+void	env_appending(char *arguments, t_env *env)
+{
+	char	*key;
+	char	*value;
+	t_env	*existing;
+	t_env	*new_node;
+	char	*plus_pos;
+	char	*new_value;
+
+	plus_pos = strstr(arguments, "+=");
+	if (!plus_pos)
+		return ;
+	key = strndup(arguments, plus_pos - arguments);
+	value = strdup(plus_pos + 2);
+	if (!is_valid_varname(key))
+	{
+		printf("export: '%s': not a valid identifier\n", arguments);
+		free(key);
+		free(value);
+		return ;
+	}
+	existing = find_env(env, key);
+	if (existing)
+	{
+		new_value = ft_strjoin_safe(existing->value, value);
+		free(existing->value);
+		existing->value = new_value;
+		free(key);
+		free(value);
+		return ;
+	}
+	new_node = create_env_node(key, value);
+	if (new_node)
+		add_env(env, new_node);
+}
+
+int	no_assignment(char *arguments)
+{
+	int	i;
+
+	i = 0;
+	while (arguments[i])
+	{
+		if (arguments[i] == '=')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+void	env_no_assignment(char *arguments, t_env *env)
+{
+	char	*key;
+	char	*value;
+	t_env	*existing;
+	t_env	*new_node;
+	char	*equal_pos;
+
+	key = strdup(arguments);
+	value = NULL;
+	if (!is_valid_varname(key))
+	{
+		printf("export: '%s': not a valid identifier\n", arguments);
+		free(key);
+		return ;
+	}
+	existing = find_env(env, key);
+	if (existing)
+	{
+		free(existing->value);
+		existing->value = value;
+		free(key);
+		return ;
+	}
+	new_node = create_env_node(key, value);
+	if (new_node)
+		add_env(env, new_node);
+}
+
+int	print_env(t_env *env)
+{
+	if (!env)
+		return (1);
 	while (env)
 	{
-		printf("declare -x %s=\"%s\"\n", env->key, env->value);
+		if (env->value == NULL)
+			printf("declare -x %s\n", env->key);
+		else
+			printf("declare -x %s=\"%s\"\n", env->key, env->value);
 		env = env->next;
 	}
 	return (0);
 }
 
-int	buildin_unset(t_node *node, t_env **env)
+// buildin_export関数を修正
+int	buildin_export(t_node *node, t_env *env)
 {
-	char	*unset_key;
+	int	i;
+
+	i = 1;
+	if (node->command[i] == NULL)
+		print_env(env);
+	else
+	{
+		while (node->command[i] != NULL)
+		{
+			if (no_assignment(node->command[i]))
+				env_no_assignment(node->command[i], env);
+			else if (is_appending(node->command[i]))
+				env_appending(node->command[i], env);
+			else if (is_addition(node->command[i]))
+				env_addition(node->command[i], env);
+			else
+				printf("export: '%s': not a valid identifier\n",
+					node->command[i]);
+			i++;
+		}
+	}
+	return (0);
+}
+//---export---
+
+void	unset_env(t_env **env, char *unset_key)
+{
 	t_env	*prev;
 	t_env	*curr;
 
-	if (node->command[1] == NULL)
-		unset_key = strdup("");
-	else
-		unset_key = strdup(node->command[1]);
 	prev = NULL;
 	curr = *env;
 	while (curr)
@@ -360,10 +591,24 @@ int	buildin_unset(t_node *node, t_env **env)
 		prev = curr;
 		curr = curr->next;
 	}
-	free(unset_key);
+}
+
+int	buildin_unset(t_node *node, t_env **env)
+{
+	int	i;
+
+	i = 1;
+	if (node->command[i] == NULL)
+		return (0);
+	while (node->command[i] != NULL)
+	{
+		unset_env(env, node->command[i]);
+		i++;
+	}
 	return (0);
 }
 
+//---env---
 int	buildin_env(t_env *env)
 {
 	if (!env)
@@ -375,3 +620,4 @@ int	buildin_env(t_env *env)
 	}
 	return (0);
 }
+//---env---
