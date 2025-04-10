@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 22:56:47 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/11 00:47:27 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ typedef struct s_token
 	struct s_token		*next;
 }	t_token;
 
-// [fix] parser struct
 typedef enum e_redirect_kind
 {
     RD_INPUT,
@@ -89,6 +88,13 @@ typedef struct s_shell
 
 //---tokenize---
 t_token		*tokenize(char *line, t_shell *shell);
+int	        is_reserved(char c);
+t_token	    *tokenize_reserved(char **line);
+t_token	    *tokenize_word(char **line, t_shell *shell);
+char	    *extract_word(char **line, t_shell *shell);
+t_token	    *new_token(t_token_kind kind, char *word);
+void	    add_token(t_token **tokens, t_token *new);
+int	        is_space(char c);
 
 //---parse---
 t_node		*parse(t_token *tokens, t_shell *shell);
@@ -143,8 +149,6 @@ char	*find_command_path(char *cmd, t_env *env);
 void	execute_child(t_node *node, t_env *env);
 int	apply_redirects(t_redirect *redirects);
 int	execute_simple_command(t_node *node, t_env *env);
-
-//--debugchar	*ft_strjoin(char *s1, char *s2)
 
 //---buildin---
 
