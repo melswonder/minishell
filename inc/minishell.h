@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 20:59:53 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 22:40:08 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,17 +88,26 @@ typedef struct s_shell
 }   t_shell;
 
 t_token		*tokenize(char *line, t_shell *shell);
-void		free_tokens(t_token *tokens);
 
 t_node		*parse(t_token *tokens, t_shell *shell);
-void		free_node(t_node *node);
-void	    free_all_nodes(t_node *head);
 
-
+//---init---
 t_env		*init_env(char **envp);
+t_shell     *init_shell(t_env *env);
+// void	    init_shell(t_shell *shell, t_env *env);
+
+//---free---
+void	    free_all_nodes(t_node *head);
+void		free_node(t_node *node);
+void		free_tokens(t_token *tokens);
+void		free_env(t_env *env);
+
+//---signal---
+void		signal_handler(int sig);
+void		setup_signal(void);
+
 char		*get_env_value(t_env *env, char *key);
 void		set_env_value(t_env *env, char *key, char *value);
-void		free_env(t_env *env);
 
 int			is_builtin(char *cmd);
 int			exec_builtin(char **cmd, t_env *env);
@@ -113,8 +122,7 @@ int			builtin_exit(char **args);
 char		**env_to_array(t_env *env);
 void		free_array(char **array);
 
-void		signal_handler(int sig);
-void		setup_signal(void);
+
 void		minishell_loop(t_env *env, t_shell *shell);
 void		unset_env(t_env **env, char *key);
 

@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/10 21:26:43 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 22:13:21 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,30 +147,6 @@ t_token	*handle_command(t_node	*node, t_token *token)
 	return (token);
 }
 
-void	free_node(t_node *node)
-{
-	int			i;
-	t_redirect	*redirect;
-	t_redirect	*next;
-
-	if (node->command != NULL)
-	{
-		i = 0;
-		while (node->command[i] != NULL)
-			free(node->command[i++]);
-		free(node->command);
-	}
-	redirect = node->redirects;
-	while (redirect != NULL)
-	{
-		next = redirect->next;
-		free(redirect->filename);
-		free(redirect);
-		redirect = next;
-	}
-	free(node);
-}
-
 t_node	*parse_command_node(t_token **token_ptr, t_shell *shell)
 {
 	t_node	*node;
@@ -199,20 +175,6 @@ t_node	*parse_command_node(t_token **token_ptr, t_shell *shell)
 	}
 	*token_ptr = token;
 	return (node);
-}
-
-void	free_all_nodes(t_node *head)
-{
-	t_node	*current;
-	t_node	*next;
-
-	current = head;
-	while (current != NULL)
-	{
-		next = current->next;
-		free_node(current);
-		current = next;
-	}
 }
 
 static t_node	*parse_pipeline(t_token **token, t_shell *shell)

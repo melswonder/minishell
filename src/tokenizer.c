@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/10 05:13:40 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 22:13:33 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,15 +149,3 @@ t_token	*tokenize(char *line, t_shell *shell)
 	return (tokens);
 }
 
-void	free_tokens(t_token *tokens)
-{
-	t_token	*tmp;
-
-	while (tokens)
-	{
-		tmp = tokens;
-		tokens = tokens->next;
-		free(tmp->word);
-		free(tmp);
-	}
-}
