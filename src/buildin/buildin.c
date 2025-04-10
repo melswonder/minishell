@@ -1,4 +1,4 @@
-#include "../inc/minishell.h"
+#include "../../inc/minishell.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
