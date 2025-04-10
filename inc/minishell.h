@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/11 01:29:58 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/11 02:00:31 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,6 @@ t_node		*new_node(void);
 t_redirect	*new_redirect(t_redirect_kind kind, char *filename);
 void		add_redirect_to_node(t_node *node, t_redirect *redirect);
 
-
 //---init---
 t_env		*init_env(char **envp);
 t_shell		*init_shell(t_env *env);
@@ -123,13 +122,30 @@ void		signal_handler(int sig);
 void		setup_signal(void);
 
 //---debug---
-void	print_node(t_node *node);
+void		print_node(t_node *node);
 
 //---minishell---
 void		minishell_loop(t_env *env, t_shell *shell);
 
 //---expand---
-void expand_variable(t_shell *shell);
+void 		expand_variable(t_shell *shell);
+bool		is_alpha_under(char c);
+bool		is_alpha_num_under(char c);
+bool		is_identifier(const char *s);
+void		append_char(char **dst, char c);
+bool		is_metacharacter(char c);
+bool		is_variable(char *s);
+char		*get_env_values(t_shell *shell, const char *key);
+void		expand_variable_str(char **dst, char **rest, char *p, t_shell *shell);
+void		expand_command(t_shell *shell, char **command);
+void		expand_variable(t_shell *shell);
+bool		is_special_parameter(char *s);
+void		expand_special_parameter_str(char **dst, char **rest, char *p, t_shell *shell);
+void		append_num(char **dst, unsigned int num);
+void		append_single_quote(char **dst, char **rest, char *p);
+void		append_double_quote(char **dst, char **rest, char *p, t_shell *shell);
+char		*expand_string(t_shell *shell, char *word);
+void		expand_redirects(t_shell *shell, t_redirect *redirect);
 
 char		*get_env_value(t_env *env, char *key);
 void		set_env_value(t_env *env, char *key, char *value);

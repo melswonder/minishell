@@ -6,7 +6,7 @@
 #    By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/06 20:58:32 by hirwatan          #+#    #+#              #
-#    Updated: 2025/04/11 01:27:58 by kiwasa           ###   ########.fr        #
+#    Updated: 2025/04/11 02:02:48 by kiwasa           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,11 @@ SRCS = 	src/tokenizer/tokenizer.c \
 		src/buildin.c \
 		src/minishell/minishell.c \
 		src/execute.c \
-		src/expand.c \
+		src/expand/expand_quote.c \
+		src/expand/expand_redirect.c \
+		src/expand/expand_special.c \
+		src/expand/expand_utils.c \
+		src/expand/expand_variable.c \
 		src/free/free.c \
 		src/init/init.c \
 		src/main.c
