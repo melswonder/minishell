@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/10 18:31:09 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 21:26:43 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,10 +232,7 @@ static t_node	*parse_pipeline(t_token **token, t_shell *shell)
 	{
 		next_node = parse_command_node(token, shell);
 		if (next_node == NULL)
-		{
-			free_all_nodes(head);
-			return (NULL);
-		}
+			return (head);
 		if (head == NULL)
 			head = next_node;
 		else
@@ -247,12 +244,12 @@ static t_node	*parse_pipeline(t_token **token, t_shell *shell)
 					(strcmp((*token)->next->word, "|") == 0))
 			{
 				shell->syntax_error = true;
-				return (NULL);
+				return (head);
 			}
 			else if ((*token)->next->kind == TK_EOF)
 			{
 				shell->syntax_error = true;
-				return (NULL);
+				return (head);
 			}
 			*token = (*token)->next;
 		}

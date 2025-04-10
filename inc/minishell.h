@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 20:36:13 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 20:59:53 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ void		free_array(char **array);
 
 void		signal_handler(int sig);
 void		setup_signal(void);
-void		minishell_loop(t_env *env);
+void		minishell_loop(t_env *env, t_shell *shell);
 void		unset_env(t_env **env, char *key);
 
 void	add_redirect(t_redirect **list, t_redirect *new);

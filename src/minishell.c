@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 20:36:48 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 21:44:50 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	setup_signal(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-void	init_shell(t_shell *shell, t_node *node, t_env *env)
+void	init_shell(t_shell *shell, t_env *env)
 {
 	shell->env = env;
 	shell->head = NULL;
@@ -40,47 +40,41 @@ void	init_shell(t_shell *shell, t_node *node, t_env *env)
 	shell->status = 0;
 }
 
-bool	check_syntax_error(t_shell *shell)
+bool	check_syntax_error(t_shell *shell, t_node *node, t_token *tokens)
 {
 	if (shell->syntax_error)
 	{
 		shell->status = 2;
 		printf("syntax_error near unexpected token `  '\n");
+		if (node)
+			free_all_nodes(node);
+		if (tokens)
+			free_tokens(tokens);
 		return (true);
 	}
 	return (false);
 }
 
-static void	process_input(char *line, t_env *env)
+static void	process_input(char *line, t_shell *shell)
 {
 	t_token	*tokens;
 	t_node	*node;
-	t_shell	*shell;
 
 	if (line[0] == '\0')
 		return ;
 	add_history(line);
-	shell = (t_shell *)malloc(sizeof(t_shell));
-    if (!shell)
-        return;
-	init_shell(shell, node, env);
 	tokens = tokenize(line, shell);
 	node = parse(tokens, shell);
-	if (check_syntax_error(shell))
-	{
-		free(shell);
-		free(tokens);
+	if (check_syntax_error(shell, node, tokens))
 		return ;
-	}
 	expand_variable(shell);
 	print_node(shell->head);
 	execute(shell);
 	free_tokens(tokens);
 	free_all_nodes(shell->head);
-	free(shell);
 }
 
-void	minishell_loop(t_env *env)
+void	minishell_loop(t_env *env, t_shell *shell)
 {
 	char	*line;
 
@@ -93,9 +87,7 @@ void	minishell_loop(t_env *env)
 			printf("exit\n");
 			break ;
 		}
-		process_input(line, env);
-		// stop
-		// exit(0);
+		process_input(line, shell);
 		free(line);
 	}
 }
@@ -117,12 +109,10 @@ t_env	*init_env(char **envp)
 	{
 		new_node = malloc(sizeof(t_env));
 		if (!new_node)
-			return (NULL); // エラー時は必要に応じてリスト全体の解放処理を追加
-		// envp[i]から '=' の位置を探す
+			return (NULL);
 		equal_sign = strchr(envp[i], '=');
 		if (equal_sign)
 		{
-			// key は '=' の左側、value は '=' の右側
 			key = strndup(envp[i], equal_sign - envp[i]);
 			value = strdup(equal_sign + 1);
 		}
@@ -168,6 +158,7 @@ void	free_env(t_env *env)
 int	main(int argc, char **argv, char **envp)
 {
 	t_env	*env;
+	t_shell	*shell;
 
 	if (argc != 1)
 	{
@@ -176,7 +167,12 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	env = init_env(envp);
-	minishell_loop(env);
+	shell = (t_shell *)malloc(sizeof(t_shell));
+	if (!shell)
+		return (1);
+	init_shell(shell, env);
+	minishell_loop(env, shell);
+	free(shell);
 	free_env(env);
 	return (0);
 }
