@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 04:56:30 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 11:22:35 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,6 @@ void		free_tokens(t_token *tokens);
 t_node		*parse(t_token *tokens, t_shell *shell);
 void		free_node(t_node *node);
 
-int			execute(t_node *node, t_env *env);
 
 t_env		*init_env(char **envp);
 char		*get_env_value(t_env *env, char *key);
@@ -147,6 +146,11 @@ int	buildin_export(t_env *env);
 int	buildin_env(t_env *env);
 int	buildin_pwd(void);
 //---buildin---
+
+//---execute---
+int	execute(t_shell *shell);
+//---execute---
+
 
 //---expand---
 void expand_variable(t_shell *shell);

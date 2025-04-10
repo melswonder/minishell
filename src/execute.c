@@ -3,35 +3,6 @@
 // TK_WORD
 // TK_RESERVED
 // TK_EOF
-int	ft_pipecount(t_node *node)
-{
-	t_node	*tmp;
-	int		count;
-
-	count = 0;
-	tmp = node;
-	while (tmp)
-	{
-		if (strcmp(tmp->command[0], "|") == 0)
-			count++;
-		tmp = tmp->next;
-	}
-	return (count);
-}
-
-int	count_commad(t_node *node)
-{
-	int	i;
-
-	i = 0;
-	if (node->command[i] == NULL)
-		return (0);
-	while (node->command[i] != NULL)
-	{
-		i++;
-	}
-	return (i);
-}
 
 int	is_builtin_command(char *str)
 {
@@ -79,8 +50,6 @@ int	buildin_branch(t_node *node, t_env *env)
 //---redirect---
 int	redirect_input(t_redirect *redirect)
 {
-	int	fd;
-
 	// filenameの存在チェック
 	if (!redirect->filename)
 	{
@@ -97,8 +66,7 @@ int	redirect_input(t_redirect *redirect)
 		printf("bash: %s: Permission denied\n", redirect->filename);
 		return (-1);
 	}
-	fd = open(redirect->filename, O_RDONLY);
-	return (fd);
+	return (open(redirect->filename, O_RDONLY));
 }
 
 // 同様に他のリダイレクト関数も修正
@@ -117,14 +85,77 @@ int	redirect_append(t_redirect *redirect)
 	fd = open(redirect->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	return (fd);
 }
+
 int	redirect_heredoc(t_redirect *redirect)
 {
-	int	fd;
+	int		pipe_fd[2];
+	char	*line;
+	char	*delimiter;
 
-	// fd = create_heredoc(node->redirects->filename);
-	fd = 1;
-	return (fd);
+	signal(SIGINT,SIG_IGN);
+	if (!redirect->filename)
+	{
+		printf("syntax error near unexpected token `newline'\n");
+		return (-1);
+	}
+	delimiter = redirect->filename;
+	if (pipe(pipe_fd) == -1)
+		return (-1);
+	while (1)
+	{
+		line = readline("> "); // プロンプトに空白を追加
+		if (!line)             // Ctrl+Dが入力された場合
+		{
+			printf("warning: here-document at line 1 delimited by EOF\n");
+			break ;
+		}
+		if (strcmp(line, delimiter) == 0) // デリミタと一致した場合に終了
+		{
+			free(line);
+			break ;
+		}
+		write(pipe_fd[1], line, strlen(line));
+		write(pipe_fd[1], "\n", 1);
+		free(line);
+	}
+	signal(SIGINT, signal_handler);
+	close(pipe_fd[1]);
+	return (pipe_fd[0]);
 }
+
+int	redirect_check_adaptation(t_redirect *current, int *fd_in, int *fd_out)
+{
+	if (current == NULL)
+		return (0);
+	if (current->kind == RD_INPUT)
+	{
+		if (*fd_in != STDIN_FILENO)
+			close(*fd_in);
+		*fd_in = redirect_input(current);
+	}
+	else if (current->kind == RD_HEREDOC)
+	{
+		if (*fd_in != STDIN_FILENO)
+			close(*fd_in);
+		*fd_in = redirect_heredoc(current);
+	}
+	else if (current->kind == RD_OUTPUT)
+	{
+		if (*fd_out != STDOUT_FILENO)
+			close(*fd_out);
+		*fd_out = redirect_output(current);
+	}
+	else if (current->kind == RD_APPEND)
+	{
+		if (*fd_out != STDOUT_FILENO)
+			close(*fd_out);
+		*fd_out = redirect_append(current);
+	}
+	if (*fd_in == -1 || *fd_out == -1)
+		return (EXIT_FAILURE);
+	return (0);
+}
+
 //---addpath---
 
 char	**ft_path_split(char *path)
@@ -330,7 +361,6 @@ int	execute_nomal(t_node *node, t_env *env)
 			i++;
 			continue ;
 		}
-		printf("Trying: %s\n", cmd_path);
 		if (access(cmd_path, X_OK) == 0)
 		{
 			if (execve(cmd_path, node->command, envp) == -1)
@@ -412,58 +442,14 @@ int	execute_pipeline(t_node *node, t_env *env)
 			current = node->redirects;
 			while (current != NULL)
 			{
-				if (current->kind == RD_INPUT)
-				{
-					if (fd_in != STDIN_FILENO)
-						close(fd_in);
-					fd_in = redirect_input(current); // currentを引数に
-					if (fd_in != -1)
-					{
-						dup2(fd_in, STDIN_FILENO);
-						close(fd_in);
-						fd_in = STDIN_FILENO; // 既にdup2したので標準入力になった
-					}
-				}
-				else if (current->kind == RD_HEREDOC)
-				{
-					if (fd_in != STDIN_FILENO)
-						close(fd_in);
-					fd_in = redirect_heredoc(current);
-					if (fd_in != -1)
-					{
-						dup2(fd_in, STDIN_FILENO);
-						close(fd_in);
-						fd_in = STDIN_FILENO;
-					}
-				}
-				else if (current->kind == RD_OUTPUT)
-				{
-					if (fd_out != STDOUT_FILENO)
-						close(fd_out);
-					fd_out = redirect_output(current);
-					if (fd_out != -1)
-					{
-						dup2(fd_out, STDOUT_FILENO);
-						close(fd_out);
-						fd_out = STDOUT_FILENO;
-					}
-				}
-				else if (current->kind == RD_APPEND)
-				{
-					if (fd_out != STDOUT_FILENO)
-						close(fd_out);
-					fd_out = redirect_append(current);
-					if (fd_out != -1)
-					{
-						dup2(fd_out, STDOUT_FILENO);
-						close(fd_out);
-						fd_out = STDOUT_FILENO;
-					}
-				}
-				if (fd_in == -1 || fd_out == -1)
-					return (EXIT_FAILURE);
+				if (redirect_check_adaptation(current, &fd_in, &fd_out) != 0)
+					exit(EXIT_FAILURE);
 				current = current->next;
 			}
+			if (fd_in != STDIN_FILENO)
+				dup2(fd_in, STDIN_FILENO);
+			if (fd_out != STDOUT_FILENO)
+				dup2(fd_out, STDOUT_FILENO);
 			if (is_builtin_command(node->command[0]))
 				buildin_branch(node, env);
 			else
@@ -483,100 +469,81 @@ int	execute_pipeline(t_node *node, t_env *env)
 		;
 	return (EXIT_SUCCESS);
 }
+//---refuct---
 
-int	execute(t_node *node, t_env *env)
+int	execute_buildin(t_shell *shell, int *fd_in, int *fd_out)
 {
-	int			input_fd;
-	int			output_fd;
-	t_redirect	*current;
-	int			stdin_backup;
-	int			stdout_backup;
-	pid_t		pid;
-	int			status;
+	int	stdin_backup;
+	int	stdout_backup;
 
-	if (!node->command || !node->command[0])
-		return (EXIT_FAILURE);
-	if (node->next != NULL)
-		execute_pipeline(node, env);
+	stdin_backup = dup(STDIN_FILENO);
+	stdout_backup = dup(STDOUT_FILENO);
+	if (*fd_in != STDIN_FILENO)
+		dup2(*fd_in, STDIN_FILENO);
+	if (*fd_out != STDOUT_FILENO)
+		dup2(*fd_out, STDOUT_FILENO);
+	buildin_branch(shell->head, shell->env);
+	dup2(stdin_backup, STDIN_FILENO);
+	dup2(stdout_backup, STDOUT_FILENO);
+	close(stdin_backup);
+	close(stdout_backup);
+	return (0);
+}
+
+int	execute_single(t_shell *shell, int fd_in, int fd_out)
+{
+	pid_t	pid;
+	int		status;
+
+	status = 0;
+	pid = fork();
+	if (pid == 0)
+	{
+		if (fd_in != STDIN_FILENO)
+			dup2(fd_in, STDIN_FILENO);
+		if (fd_out != STDOUT_FILENO)
+			dup2(fd_out, STDOUT_FILENO);
+		execute_nomal(shell->head, shell->env);
+	}
 	else
 	{
-		input_fd = STDIN_FILENO;
-		output_fd = STDOUT_FILENO;
-		current = node->redirects;
-		while (current != NULL)
-		{
-			if (current->kind == RD_INPUT)
-			{
-				if (input_fd != STDIN_FILENO)
-					close(input_fd);
-				input_fd = redirect_input(current);
-			}
-			else if (current->kind == RD_HEREDOC)
-			{
-				if (input_fd != STDIN_FILENO)
-					close(input_fd);
-				input_fd = redirect_heredoc(current);
-			}
-			else if (current->kind == RD_OUTPUT)
-			{
-				if (output_fd != STDOUT_FILENO)
-					close(output_fd);
-				output_fd = redirect_output(current);
-			}
-			else if (current->kind == RD_APPEND)
-			{
-				if (output_fd != STDOUT_FILENO)
-					close(output_fd);
-				output_fd = redirect_append(current);
-			}
-			if (input_fd == -1 || output_fd == -1)
-				return (EXIT_FAILURE);
-			if(input_fd != STDIN_FILENO)
-				dup2(input_fd,STDIN_FILENO);
-			current = current->next;
-		}
-		if (is_builtin_command(node->command[0]))
-		{
-			// 標準入出力のバックアップ
-			stdin_backup = dup(STDIN_FILENO);
-			stdout_backup = dup(STDOUT_FILENO);
-			// リダイレクト適用
-			if (input_fd != STDIN_FILENO)
-				dup2(input_fd, STDIN_FILENO);
-			if (output_fd != STDOUT_FILENO)
-				dup2(output_fd, STDOUT_FILENO);
-			// ビルトイン実行
-			buildin_branch(node, env);
-			// 標準入出力を元に戻す
-			dup2(stdin_backup, STDIN_FILENO);
-			dup2(stdout_backup, STDOUT_FILENO);
-			close(stdin_backup);
-			close(stdout_backup);
-		}
-		else // 外部コマンド
-		{
-			pid = fork();
-			if (pid == 0)
-			{
-				// リダイレクト適用
-				if (input_fd != STDIN_FILENO)
-					dup2(input_fd, STDIN_FILENO);
-				if (output_fd != STDOUT_FILENO)
-					dup2(output_fd, STDOUT_FILENO);
-				// コマンド実行
-				execute_nomal(node, env);
-				exit(EXIT_FAILURE);
-			}
-			else
-			{
-				waitpid(pid, &status, 0);
-			}
-		}
-		// FDのクリーンアップ
-		if (input_fd != STDIN_FILENO)
-			close(input_fd);
-		if (output_fd != STDOUT_FILENO)
-			close(output_fd);
+		waitpid(pid, &status, 0);
 	}
+	if (fd_in != STDIN_FILENO)
+		close(fd_in);
+	if (fd_out != STDOUT_FILENO)
+		close(fd_out);
+	return (status);
+}
+
+int	execute(t_shell *shell)
+{
+	int			fd_in;
+	int			fd_out;
+	pid_t		pid;
+	t_redirect	*current;
+	int			status;
+
+	if (!shell->head->command || !shell->head->command[0])
+		return (EXIT_FAILURE);
+	if (shell->head->next != NULL)
+		return (execute_pipeline(shell->head, shell->env), 0);
+	fd_in = STDIN_FILENO;
+	fd_out = STDOUT_FILENO;
+	current = shell->head->redirects;
+	while (current != NULL)
+	{
+		if (redirect_check_adaptation(current, &fd_in, &fd_out) != 0)
+			return (EXIT_FAILURE);
+		current = current->next;
+	}
+	if (is_builtin_command(shell->head->command[0]))
+	{
+		if (strcmp(shell->head->command[0], "exit") == 0)
+			buildin_exit(shell->head);
+		execute_buildin(shell, &fd_in, &fd_out);
+	}
+	else //単一コマンド
+		status = execute_single(shell, fd_in, fd_out);
 	return (EXIT_SUCCESS);
 }

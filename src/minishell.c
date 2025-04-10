@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 05:47:34 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 16:05:11 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,9 @@ static void	process_input(char *line, t_env *env)
 	node = parse(tokens, shell);
 	if (check_syntax_error(shell))
 		return ;
-	print_node(node);
 	expand_variable(shell);
-	print_node(node);
-	execute(node, env);
+	print_node(shell->head);
+	execute(shell);
 	return ;
 	free_tokens(tokens);
 	free_node(node);
