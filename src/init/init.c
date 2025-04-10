@@ -6,23 +6,15 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 22:00:20 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/10 22:40:00 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 22:45:25 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-// void	init_shell(t_shell *shell, t_env *env)
-// {
-// 	shell->env = env;
-// 	shell->head = NULL;
-// 	shell->syntax_error = false;
-// 	shell->status = 0;
-// }
-
-t_shell *init_shell(t_env *env)
+t_shell	*init_shell(t_env *env)
 {
-	t_shell *shell;
+	t_shell	*shell;
 
 	shell = (t_shell *)malloc(sizeof(t_shell));
 	if (!shell)

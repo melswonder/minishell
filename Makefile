@@ -6,17 +6,17 @@
 #    By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/06 20:58:32 by hirwatan          #+#    #+#              #
-#    Updated: 2025/04/10 22:24:59 by kiwasa           ###   ########.fr        #
+#    Updated: 2025/04/10 22:58:30 by kiwasa           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 SRCS = 	src/tokenizer.c \
 		src/parser.c \
-		src/debug.c \
+		src/debug/debug.c \
 		src/signal/signal.c \
 		src/buildin.c \
-		src/minishell.c \
+		src/minishell/minishell.c \
 		src/execute.c \
 		src/expand.c \
 		src/free/free.c \

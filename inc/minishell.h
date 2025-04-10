@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 22:40:08 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/10 22:56:47 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,8 +87,10 @@ typedef struct s_shell
     int     status;
 }   t_shell;
 
+//---tokenize---
 t_token		*tokenize(char *line, t_shell *shell);
 
+//---parse---
 t_node		*parse(t_token *tokens, t_shell *shell);
 
 //---init---
@@ -106,6 +108,9 @@ void		free_env(t_env *env);
 void		signal_handler(int sig);
 void		setup_signal(void);
 
+
+
+
 char		*get_env_value(t_env *env, char *key);
 void		set_env_value(t_env *env, char *key, char *value);
 
@@ -120,8 +125,6 @@ int			builtin_env(t_env *env);
 int			builtin_exit(char **args);
 
 char		**env_to_array(t_env *env);
-void		free_array(char **array);
-
 
 void		minishell_loop(t_env *env, t_shell *shell);
 void		unset_env(t_env **env, char *key);
@@ -158,14 +161,11 @@ int	buildin_pwd(void);
 
 //---execute---
 int	execute(t_shell *shell);
-//---execute---
-
 
 //---expand---
 void expand_variable(t_shell *shell);
-//---expand---
 
-//---print_node---
+//---debug---
 void	print_node(t_node *node);
-//---print_node---
+
 #endif
