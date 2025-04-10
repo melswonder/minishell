@@ -6,7 +6,7 @@
 #    By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/06 20:58:32 by hirwatan          #+#    #+#              #
-#    Updated: 2025/04/11 00:49:10 by kiwasa           ###   ########.fr        #
+#    Updated: 2025/04/11 01:27:58 by kiwasa           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,11 @@ SRCS = 	src/tokenizer/tokenizer.c \
 		src/tokenizer/token_reserved.c \
 		src/tokenizer/token_utils.c \
 		src/tokenizer/token_word.c \
-		src/parser.c \
+		src/parser/parser.c \
+		src/parser/parse_node.c \
+		src/parser/node_utils.c \
+		src/parser/command_handler.c \
+		src/parser/redirect_handler.c \
 		src/debug/debug.c \
 		src/signal/signal.c \
 		src/buildin.c \

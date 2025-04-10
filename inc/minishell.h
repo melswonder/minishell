@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/11 00:47:27 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/11 01:29:58 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,24 +88,32 @@ typedef struct s_shell
 
 //---tokenize---
 t_token		*tokenize(char *line, t_shell *shell);
-int	        is_reserved(char c);
-t_token	    *tokenize_reserved(char **line);
-t_token	    *tokenize_word(char **line, t_shell *shell);
-char	    *extract_word(char **line, t_shell *shell);
-t_token	    *new_token(t_token_kind kind, char *word);
-void	    add_token(t_token **tokens, t_token *new);
-int	        is_space(char c);
+int			is_reserved(char c);
+t_token		*tokenize_reserved(char **line);
+t_token		*tokenize_word(char **line, t_shell *shell);
+char		*extract_word(char **line, t_shell *shell);
+t_token		*new_token(t_token_kind kind, char *word);
+void		add_token(t_token **tokens, t_token *new);
+int			is_space(char c);
 
 //---parse---
 t_node		*parse(t_token *tokens, t_shell *shell);
+t_node		*parse_command_node(t_token **token_ptr, t_shell *shell);
+int			count_command_words(t_token *token);
+char		**create_command_array(t_token *token, int count);
+t_token		*handle_command(t_node	*node, t_token *token);
+t_token		*handle_redirect(t_node *node, t_token *token, t_shell *shell);
+t_node		*new_node(void);
+t_redirect	*new_redirect(t_redirect_kind kind, char *filename);
+void		add_redirect_to_node(t_node *node, t_redirect *redirect);
+
 
 //---init---
 t_env		*init_env(char **envp);
-t_shell     *init_shell(t_env *env);
-// void	    init_shell(t_shell *shell, t_env *env);
+t_shell		*init_shell(t_env *env);
 
 //---free---
-void	    free_all_nodes(t_node *head);
+void		free_all_nodes(t_node *head);
 void		free_node(t_node *node);
 void		free_tokens(t_token *tokens);
 void		free_env(t_env *env);
@@ -114,8 +122,14 @@ void		free_env(t_env *env);
 void		signal_handler(int sig);
 void		setup_signal(void);
 
+//---debug---
+void	print_node(t_node *node);
 
+//---minishell---
+void		minishell_loop(t_env *env, t_shell *shell);
 
+//---expand---
+void expand_variable(t_shell *shell);
 
 char		*get_env_value(t_env *env, char *key);
 void		set_env_value(t_env *env, char *key, char *value);
@@ -132,7 +146,6 @@ int			builtin_exit(char **args);
 
 char		**env_to_array(t_env *env);
 
-void		minishell_loop(t_env *env, t_shell *shell);
 void		unset_env(t_env **env, char *key);
 
 void	add_redirect(t_redirect **list, t_redirect *new);
@@ -165,11 +178,5 @@ int	buildin_pwd(void);
 
 //---execute---
 int	execute(t_shell *shell);
-
-//---expand---
-void expand_variable(t_shell *shell);
-
-//---debug---
-void	print_node(t_node *node);
 
 #endif
