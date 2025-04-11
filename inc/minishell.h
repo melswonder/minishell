@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/12 04:04:14 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/12 04:23:22 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,8 +110,8 @@ t_redirect						*new_redirect(t_redirect_kind kind,
 									char *filename);
 void							add_redirect_to_node(t_node *node,
 									t_redirect *redirect);
-t_token 						*handle_redirects(t_node *node, t_token *token, t_shell *shell);
-
+t_token							*handle_redirects(t_node *node, \
+									t_token *token, t_shell *shell);
 
 //---init---
 t_env							*init_env(char **envp);
