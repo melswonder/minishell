@@ -92,7 +92,7 @@ int	open_heredoc_redirect(t_redirect *redirect)
 	char	*line;
 	char	*delimiter;
 
-	signal(SIGINT, SIG_IGN);
+	// signal(SIGINT, signal_exit);
 	if (!redirect->filename)
 	{
 		printf("syntax error near unexpected token `newline'\n");
@@ -103,6 +103,7 @@ int	open_heredoc_redirect(t_redirect *redirect)
 		return (-1);
 	while (1)
 	{
+		signal(SIGINT,signal_exit);
 		line = readline("> "); // プロンプトに空白を追加
 		if (!line)             // Ctrl+Dが入力された場合
 		{
@@ -481,9 +482,13 @@ int	execute_single(t_shell *shell, int fd_in, int fd_out)
 	int		status;
 
 	status = 0;
+    signal(SIGINT, SIG_IGN);
+    signal(SIGQUIT, SIG_IGN);
 	pid = fork();
 	if (pid == 0)
 	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		if (fd_in != STDIN_FILENO)
 			dup2(fd_in, STDIN_FILENO);
 		if (fd_out != STDOUT_FILENO)
@@ -493,6 +498,8 @@ int	execute_single(t_shell *shell, int fd_in, int fd_out)
 	else
 	{
 		waitpid(pid, &status, 0);
+		signal(SIGINT, signal_handler);
+		signal(SIGQUIT, SIG_IGN);
 	}
 	if (fd_in != STDIN_FILENO)
 		close(fd_in);

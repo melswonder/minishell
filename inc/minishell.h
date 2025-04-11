@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/11 13:48:30 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:40:47 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,7 @@ void							free_env(t_env *env);
 //---signal---
 void							signal_handler(int sig);
 void							setup_signal(void);
+void							signal_exit(int sig);
 
 //---debug---
 void							print_node(t_node *node);
