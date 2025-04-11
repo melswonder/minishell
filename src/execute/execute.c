@@ -4,7 +4,7 @@
 // TK_RESERVED
 // TK_EOF
 
-int	is_builtin_command(char *str)
+int	is_builtin(char *str)
 {
 	if (!str)
 		return (0);
@@ -25,7 +25,7 @@ int	is_builtin_command(char *str)
 	return (0);
 }
 
-int	buildin_branch(t_node *node, t_env *env)
+int	execute_builtin_command(t_node *node, t_env *env)
 {
 	char	*cmd;
 
@@ -39,7 +39,7 @@ int	buildin_branch(t_node *node, t_env *env)
 	else if (strcmp(cmd, "pwd") == 0)
 		return (buildin_pwd());
 	else if (strcmp(cmd, "export") == 0)
-		return (buildin_export(node,env));
+		return (buildin_export(node, env));
 	else if (strcmp(cmd, "unset") == 0)
 		return (buildin_unset(node, &env));
 	else if (strcmp(cmd, "env") == 0)
@@ -48,7 +48,7 @@ int	buildin_branch(t_node *node, t_env *env)
 }
 
 //---redirect---
-int	redirect_input(t_redirect *redirect)
+int	open_input_redirect(t_redirect *redirect)
 {
 	// filenameの存在チェック
 	if (!redirect->filename)
@@ -70,7 +70,7 @@ int	redirect_input(t_redirect *redirect)
 }
 
 // 同様に他のリダイレクト関数も修正
-int	redirect_output(t_redirect *redirect)
+int	open_output_redirect(t_redirect *redirect)
 {
 	int	fd;
 
@@ -78,7 +78,7 @@ int	redirect_output(t_redirect *redirect)
 	return (fd);
 }
 
-int	redirect_append(t_redirect *redirect)
+int	open_append_redirect(t_redirect *redirect)
 {
 	int	fd;
 
@@ -86,13 +86,13 @@ int	redirect_append(t_redirect *redirect)
 	return (fd);
 }
 
-int	redirect_heredoc(t_redirect *redirect)
+int	open_heredoc_redirect(t_redirect *redirect)
 {
 	int		pipe_fd[2];
 	char	*line;
 	char	*delimiter;
 
-	signal(SIGINT,SIG_IGN);
+	signal(SIGINT, SIG_IGN);
 	if (!redirect->filename)
 	{
 		printf("syntax error near unexpected token `newline'\n");
@@ -123,7 +123,7 @@ int	redirect_heredoc(t_redirect *redirect)
 	return (pipe_fd[0]);
 }
 
-int	redirect_check_adaptation(t_redirect *current, int *fd_in, int *fd_out)
+int	apply_redirections(t_redirect *current, int *fd_in, int *fd_out)
 {
 	if (current == NULL)
 		return (0);
@@ -131,25 +131,25 @@ int	redirect_check_adaptation(t_redirect *current, int *fd_in, int *fd_out)
 	{
 		if (*fd_in != STDIN_FILENO)
 			close(*fd_in);
-		*fd_in = redirect_input(current);
+		*fd_in = open_input_redirect(current);
 	}
 	else if (current->kind == RD_HEREDOC)
 	{
 		if (*fd_in != STDIN_FILENO)
 			close(*fd_in);
-		*fd_in = redirect_heredoc(current);
+		*fd_in = open_heredoc_redirect(current);
 	}
 	else if (current->kind == RD_OUTPUT)
 	{
 		if (*fd_out != STDOUT_FILENO)
 			close(*fd_out);
-		*fd_out = redirect_output(current);
+		*fd_out = open_output_redirect(current);
 	}
 	else if (current->kind == RD_APPEND)
 	{
 		if (*fd_out != STDOUT_FILENO)
 			close(*fd_out);
-		*fd_out = redirect_append(current);
+		*fd_out = open_append_redirect(current);
 	}
 	if (*fd_in == -1 || *fd_out == -1)
 		return (EXIT_FAILURE);
@@ -158,7 +158,7 @@ int	redirect_check_adaptation(t_redirect *current, int *fd_in, int *fd_out)
 
 //---addpath---
 
-char	**ft_path_split(char *path)
+char	**split_path_env(char *path)
 {
 	char	*path_dup;
 	char	*token;
@@ -177,11 +177,9 @@ char	**ft_path_split(char *path)
 		token = strtok(NULL, ":");
 	}
 	free(path_dup);
-	// 結果配列を確保（NULL終端のため+1）
 	result = malloc(sizeof(char *) * (count + 1));
 	if (!result)
 		return (NULL);
-	// 再度複製してトークン分割
 	path_dup = strdup(path);
 	if (!path_dup)
 	{
@@ -201,14 +199,15 @@ char	**ft_path_split(char *path)
 	return (result);
 }
 
-char	**path_new(t_env *env)
+char	**create_path_array(t_env *env)
 {
 	char	**path;
 
+	path = NULL;
 	while (env)
 	{
 		if (strcmp(env->key, "PATH") == 0)
-			path = ft_path_split(env->value);
+			path = split_path_env(env->value);
 		env = env->next;
 	}
 	if (!path)
@@ -216,7 +215,7 @@ char	**path_new(t_env *env)
 	return (path);
 }
 
-void	free_path(char **path)
+void	free_path_array(char **path)
 {
 	int	i;
 
@@ -230,7 +229,7 @@ void	free_path(char **path)
 }
 //---addpath---
 
-char	**env_to_array(t_env *env)
+char	**convert_env_to_array(t_env *env)
 {
 	int		count;
 	t_env	*tmp;
@@ -263,7 +262,7 @@ char	**env_to_array(t_env *env)
 	return (envp);
 }
 
-void	free_envp(char **envp)
+void	free_env_array(char **envp)
 {
 	int	i;
 
@@ -306,7 +305,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (dest);
 }
 
-char	*ft_str_three_join(char const *s1, char const *s2, char const *s3)
+char	*join_three_strings(char const *s1, char const *s2, char const *s3)
 {
 	char	*ret;
 	char	*tmp;
@@ -318,21 +317,21 @@ char	*ft_str_three_join(char const *s1, char const *s2, char const *s3)
 }
 
 // unset PATH用の実行
-void	exec_path_or_exefile(t_node *node, t_env *env)
+void	execute_direct_path(t_node *node, t_env *env)
 {
 	char	**envp;
 
-	envp = env_to_array(env);
+	envp = convert_env_to_array(env);
 	if (execve(node->command[0], node->command, envp) == -1)
 	{
 		printf("command not found: %s\n", node->command[0]); //エラーメッセージ
-		free_envp(envp);
+		free_env_array(envp);
 	}
-	free_envp(envp);
+	free_env_array(envp);
 }
 
-// execute_nomal: 外部コマンドの実行（PATH 内からコマンドを探す）
-int	execute_nomal(t_node *node, t_env *env)
+// execute_normal: 外部コマンドの実行（PATH 内からコマンドを探す）
+int	execute_normal(t_node *node, t_env *env)
 {
 	char	**path;
 	int		i;
@@ -342,25 +341,20 @@ int	execute_nomal(t_node *node, t_env *env)
 	if (!node->command || !node->command[0])
 	{
 		printf("bash: command not found\n");
-		return (EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 	if (node->command[0][0] == '/' || (node->command[0][0] == '.'
 			&& node->command[0][1] == '/'))
 	{
-		exec_path_or_exefile(node, env);
-		return (0);
+		execute_direct_path(node, env);
+		exit(0);
 	}
 	i = 0;
-	path = path_new(env);
-	// if(!path)
-	// {
-	// 	printf("command not found: %s\n", node->command[0]);
-	// 	return (127);
-	// }
-	envp = env_to_array(env);
+	path = create_path_array(env);
+	envp = convert_env_to_array(env);
 	while (path[i])
 	{
-		cmd_path = ft_str_three_join(path[i], "/", node->command[0]);
+		cmd_path = join_three_strings(path[i], "/", node->command[0]);
 		if (!cmd_path)
 		{
 			i++;
@@ -376,36 +370,12 @@ int	execute_nomal(t_node *node, t_env *env)
 		free(cmd_path);
 		i++;
 	}
-	printf("command not found: %s\n", node->command[0]); // errorcheck
-	free_path(path);
-	free_envp(envp);
-	return (0);
-}
-
-int	exec_command_get_fd(t_node *node, t_env *env, int input_fd)
-{
-	int		curr_pipe[2];
-	pid_t	pid;
-
-	if (pipe(curr_pipe) == -1)
-		exit(EXIT_FAILURE);
-	pid = fork();
-	if (pid == -1)
-		exit(EXIT_FAILURE);
-	if (pid == 0)
-	{
-		if (dup2(input_fd, STDIN_FILENO) == -1)
-			exit(EXIT_FAILURE);
-		if (dup2(curr_pipe[1], STDOUT_FILENO) == -1)
-			exit(EXIT_FAILURE);
-		close(curr_pipe[0]);
-		close(curr_pipe[1]);
-		execute_nomal(node, env);
-		exit(EXIT_FAILURE);
-	}
-	close(input_fd);
-	close(curr_pipe[1]);
-	return (curr_pipe[0]);
+	if(path)
+		free_path_array(path);
+	if(envp)
+		free_env_array(envp);
+	printf("command not found: %s\n", node->command[0]);
+	exit(127);
 }
 
 int	execute_pipeline(t_node *node, t_env *env)
@@ -447,7 +417,7 @@ int	execute_pipeline(t_node *node, t_env *env)
 			current = node->redirects;
 			while (current != NULL)
 			{
-				if (redirect_check_adaptation(current, &fd_in, &fd_out) != 0)
+				if (apply_redirections(current, &fd_in, &fd_out) != 0)
 					exit(EXIT_FAILURE);
 				current = current->next;
 			}
@@ -455,10 +425,10 @@ int	execute_pipeline(t_node *node, t_env *env)
 				dup2(fd_in, STDIN_FILENO);
 			if (fd_out != STDOUT_FILENO)
 				dup2(fd_out, STDOUT_FILENO);
-			if (is_builtin_command(node->command[0]))
-				buildin_branch(node, env);
+			if (is_builtin(node->command[0]))
+				execute_builtin_command(node, env);
 			else
-				execute_nomal(node, env);
+				execute_normal(node, env);
 			exit(EXIT_SUCCESS);
 		}
 		if (input_fd != STDIN_FILENO)
@@ -476,7 +446,7 @@ int	execute_pipeline(t_node *node, t_env *env)
 }
 //---refuct---
 
-int	execute_buildin(t_shell *shell, int *fd_in, int *fd_out)
+int	execute_builtin_with_redirect(t_shell *shell, int *fd_in, int *fd_out)
 {
 	int	stdin_backup;
 	int	stdout_backup;
@@ -487,11 +457,21 @@ int	execute_buildin(t_shell *shell, int *fd_in, int *fd_out)
 		dup2(*fd_in, STDIN_FILENO);
 	if (*fd_out != STDOUT_FILENO)
 		dup2(*fd_out, STDOUT_FILENO);
-	buildin_branch(shell->head, shell->env);
+	execute_builtin_command(shell->head, shell->env);
 	dup2(stdin_backup, STDIN_FILENO);
 	dup2(stdout_backup, STDOUT_FILENO);
 	close(stdin_backup);
 	close(stdout_backup);
+	if (*fd_in != STDIN_FILENO)
+	{
+		close(*fd_in);
+		*fd_in = STDIN_FILENO;
+	}
+	if (*fd_out != STDOUT_FILENO)
+	{
+		close(*fd_out);
+		*fd_out = STDOUT_FILENO;
+	}
 	return (0);
 }
 
@@ -508,7 +488,7 @@ int	execute_single(t_shell *shell, int fd_in, int fd_out)
 			dup2(fd_in, STDIN_FILENO);
 		if (fd_out != STDOUT_FILENO)
 			dup2(fd_out, STDOUT_FILENO);
-		execute_nomal(shell->head, shell->env);
+		execute_normal(shell->head, shell->env);
 	}
 	else
 	{
@@ -538,16 +518,12 @@ int	execute(t_shell *shell)
 	current = shell->head->redirects;
 	while (current != NULL)
 	{
-		if (redirect_check_adaptation(current, &fd_in, &fd_out) != 0)
+		if (apply_redirections(current, &fd_in, &fd_out) != 0)
 			return (EXIT_FAILURE);
 		current = current->next;
 	}
-	if (is_builtin_command(shell->head->command[0]))
-	{
-		if (strcmp(shell->head->command[0], "exit") == 0)
-			buildin_exit(shell->head);
-		execute_buildin(shell, &fd_in, &fd_out);
-	}
+	if (is_builtin(shell->head->command[0]))
+		execute_builtin_with_redirect(shell, &fd_in, &fd_out);
 	else //単一コマンド
 		status = execute_single(shell, fd_in, fd_out);
 	return (EXIT_SUCCESS);

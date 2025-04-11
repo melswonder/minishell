@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+         #
+#    By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/06 20:58:32 by hirwatan          #+#    #+#              #
-#    Updated: 2025/04/11 02:08:12 by kiwasa           ###   ########.fr        #
+#    Updated: 2025/04/11 13:39:45 by hirwatan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,15 @@ SRCS = 	src/tokenizer/tokenizer.c \
 		src/parser/redirect_handler.c \
 		src/debug/debug.c \
 		src/signal/signal.c \
-		src/buildin/buildin.c \
+		src/buildin/buildin_echo.c \
+		src/buildin/buildin_exit.c \
+		src/buildin/buildin_cd.c \
+		src/buildin/buildin_pwd.c \
+		src/buildin/buildin_env.c \
+		src/buildin/buildin_unset.c \
+		src/buildin/buildin_export.c \
+		src/buildin/buildin_export_utils.c \
+		src/buildin/buildin_export_utils2.c \
 		src/minishell/minishell.c \
 		src/execute/execute.c \
 		src/expand/expand_quote.c \
@@ -54,7 +62,7 @@ clean:
 fclean: clean
 	rm -f $(NAME)
     
-v: $(NAME)
-	valgrind --leak-check=full --show-leak-kinds=all ./$(NAME)
+v: $(NAME) clean
+	valgrind --leak-check=full --show-leak-kinds=all --track-fds=all ./$(NAME)
 
 re: fclean all
