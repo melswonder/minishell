@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/12 03:27:54 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/12 03:31:53 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,10 @@ static void	process_input(char *line, t_shell *shell)
 	tokens = tokenize(line, shell);
 	node = parse(tokens, shell);
 	if (!node)
+	{
+		free_tokens(tokens);
 		return ;
+	}
 	add_history(line);
 	if (check_syntax_error(shell, node, tokens))
 		return ;
