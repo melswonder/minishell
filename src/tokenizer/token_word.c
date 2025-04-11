@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 00:42:37 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/11 00:44:13 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/12 03:57:44 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,35 +25,53 @@ t_token	*tokenize_word(char **line, t_shell *shell)
 	return (token);
 }
 
+static char	*get_word_end(char *line, char *quote)
+{
+	while (*line && (*quote || (!is_space(*line) && !is_reserved(*line))))
+	{
+		if (*line == '\'' || *line == '\"')
+		{
+			if (!*quote)
+				*quote = *line;
+			else if (*quote == *line)
+				*quote = '\0';
+		}
+		line++;
+	}
+	return (line);
+}
+
+static char	*copy_word(const char *start, int len)
+{
+	char	*word;
+
+	word = malloc(len + 1);
+	if (!word)
+		return (NULL);
+	strncpy(word, start, len);
+	word[len] = '\0';
+	return (word);
+}
+
 char	*extract_word(char **line, t_shell *shell)
 {
 	char	*start;
+	char	*end;
 	char	quote;
 	int		len;
 	char	*word;
 
 	start = *line;
 	quote = '\0';
-	while (**line && (quote || (!is_space(**line) && !is_reserved(**line))))
-	{
-		if (**line == '\'' || **line == '\"')
-		{
-			if (!quote)
-				quote = **line;
-			else if (quote == **line)
-				quote = '\0';
-		}
-		(*line)++;
-	}
-	len = *line - start;
+	end = get_word_end(*line, &quote);
+	len = end - start;
 	if (len == 0)
 		return (NULL);
 	if (quote != '\0')
 		shell->syntax_error = true;
-	word = malloc(len + 1);
+	word = copy_word(start, len);
 	if (!word)
 		return (NULL);
-	strncpy(word, start, len);
-	word[len] = '\0';
+	*line = end;
 	return (word);
 }
