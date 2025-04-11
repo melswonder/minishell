@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:57:10 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/11 01:58:08 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/12 03:18:35 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,14 @@ void	append_single_quote(char **dst, char **rest, char *p)
 {
 	if (*p == SINGLE_QUOTE_CHAR)
 	{
-		append_char(dst, *p++);
+		p ++;
 		while (*p != SINGLE_QUOTE_CHAR)
 		{
 			if (*p == '\0')
 				printf("Unclosed single quote");
 			append_char(dst, *p++);
 		}
-		append_char(dst, *p++);
+		p ++;
 		*rest = p;
 	}
 	else

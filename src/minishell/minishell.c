@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 22:58:40 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/12 03:27:54 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ bool	check_syntax_error(t_shell *shell, t_node *node, t_token *tokens)
 	if (shell->syntax_error)
 	{
 		shell->status = 2;
-		printf("syntax_error near unexpected token `  '\n");
+		printf("syntax_error\n");
 		if (node)
 			free_all_nodes(node);
 		if (tokens)
@@ -36,10 +36,12 @@ static void	process_input(char *line, t_shell *shell)
 
 	if (line[0] == '\0')
 		return ;
-	add_history(line);
 	shell->syntax_error = false;
 	tokens = tokenize(line, shell);
 	node = parse(tokens, shell);
+	if (!node)
+		return ;
+	add_history(line);
 	if (check_syntax_error(shell, node, tokens))
 		return ;
 	expand_variable(shell);
