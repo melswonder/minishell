@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+         #
+#    By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/06 20:58:32 by hirwatan          #+#    #+#              #
-#    Updated: 2025/04/11 13:39:45 by hirwatan         ###   ########.fr        #
+#    Updated: 2025/04/12 03:39:57 by kiwasa           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,8 +53,9 @@ $(NAME): $(OBJS)
 
 all: $(NAME)
 
-.c.o:
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
+
 
 clean:
 	rm -f $(OBJS)
@@ -66,3 +67,5 @@ v: $(NAME) clean
 	valgrind --leak-check=full --show-leak-kinds=all --track-fds=all ./$(NAME)
 
 re: fclean all
+
+.PHONY: all clean fclean re
