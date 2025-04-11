@@ -6,11 +6,50 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:09:15 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/11 01:10:13 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/12 04:17:43 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
+
+static bool	check_pipeline_start(t_token **token, t_shell *shell)
+{
+	if (*token != NULL && strcmp((*token)->word, "|") == 0)
+	{
+		shell->syntax_error = true;
+		return (true);
+	}
+	return (false);
+}
+
+static t_node	*parse_command(t_token **token, t_shell *shell)
+{
+	t_node	*next_node;
+
+	next_node = parse_command_node(token, shell);
+	if (next_node == NULL)
+		return (NULL);
+	return (next_node);
+}
+
+static bool	check_and_advance_pipeline_token(t_token **token, t_shell *shell)
+{
+	if (*token != NULL && strcmp((*token)->word, "|") == 0)
+	{
+		if ((*token)->next->word && strcmp((*token)->next->word, "|") == 0)
+		{
+			shell->syntax_error = true;
+			return (true);
+		}
+		else if ((*token)->next->kind == TK_EOF)
+		{
+			shell->syntax_error = true;
+			return (true);
+		}
+		*token = (*token)->next;
+	}
+	return (false);
+}
 
 static t_node	*parse_pipeline(t_token **token, t_shell *shell)
 {
@@ -18,16 +57,14 @@ static t_node	*parse_pipeline(t_token **token, t_shell *shell)
 	t_node	*head;
 	t_node	*next_node;
 
-	head = NULL;
 	current = NULL;
-	if (*token != NULL && strcmp((*token)->word, "|") == 0)
-	{
-		shell->syntax_error = true;
+	head = NULL;
+	next_node = NULL;
+	if (check_pipeline_start(token, shell))
 		return (NULL);
-	}
 	while (*token != NULL && (*token)->kind != TK_EOF)
 	{
-		next_node = parse_command_node(token, shell);
+		next_node = parse_command(token, shell);
 		if (next_node == NULL)
 			return (head);
 		if (head == NULL)
@@ -35,21 +72,8 @@ static t_node	*parse_pipeline(t_token **token, t_shell *shell)
 		else
 			current->next = next_node;
 		current = next_node;
-		if (*token != NULL && strcmp((*token)->word, "|") == 0)
-		{
-			if ((*token)->next->word && \
-					(strcmp((*token)->next->word, "|") == 0))
-			{
-				shell->syntax_error = true;
-				return (head);
-			}
-			else if ((*token)->next->kind == TK_EOF)
-			{
-				shell->syntax_error = true;
-				return (head);
-			}
-			*token = (*token)->next;
-		}
+		if (check_and_advance_pipeline_token(token, shell))
+			return (head);
 	}
 	shell->head = head;
 	return (head);
