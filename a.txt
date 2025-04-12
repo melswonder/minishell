@@ -1,0 +1,15 @@
+a.txt
+inc
+Makefile
+minishell
+src
+a.txt
+inc
+Makefile
+minishell
+src
+a.txt
+inc
+Makefile
+minishell
+src

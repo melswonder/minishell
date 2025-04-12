@@ -6,7 +6,7 @@
 #    By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/06 20:58:32 by hirwatan          #+#    #+#              #
-#    Updated: 2025/04/12 21:17:33 by hirwatan         ###   ########.fr        #
+#    Updated: 2025/04/13 03:05:04 by hirwatan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,6 +34,7 @@ SRCS = 	src/tokenizer/tokenizer.c \
 		src/buildin/buildin_export_utils2.c \
 		src/minishell/minishell.c \
 		src/execute/execute.c \
+		src/execute/execute_child.c \
 		src/execute/execute_utils.c \
 		src/redirect/redirect_input.c \
 		src/redirect/redirect_output.c \

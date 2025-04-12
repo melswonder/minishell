@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 13:19:17 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/11 16:34:15 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/13 04:33:34 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,43 +47,28 @@ int	check_special_option(char *arg, int *new_line)
 	}
 	return (0);
 }
-
-int	option_check_print(t_node *node, int new_line, int *i_ptr)
-{
-	if (option_check(node->command[1]))
-	{
-		new_line = 0;
-		(*i_ptr)++;
-	}
-	else if (check_special_option(node->command[1], &new_line))
-	{
-		if (node->command[2])
-			printf(" ");
-		(*i_ptr)++;
-	}
-	else
-		printf("%s", node->command[*i_ptr]);
-	return (new_line);
-}
-
 int	buildin_echo(t_node *node)
 {
 	int	i;
 	int	new_line;
+	int	first_arg;
 
+	if (!node->command[1])
+		return (printf("\n"),0);
 	i = 1;
-	new_line = 1;
-	if (node->command[1])
+	new_line = 1; 
+	first_arg = 1;
+	while (node->command[i] && option_check(node->command[i]))
 	{
-		new_line = option_check_print(node, new_line, &i);
-		if (i == 1)
-			i++;
+		new_line = 0; 
+		i++;
 	}
 	while (node->command[i])
 	{
-		printf("%s", node->command[i]);
-		if (node->command[i + 1])
+		if (!first_arg)
 			printf(" ");
+		printf("%s", node->command[i]);
+		first_arg = 0;
 		i++;
 	}
 	if (new_line)
