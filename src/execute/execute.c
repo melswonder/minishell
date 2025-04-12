@@ -1,163 +1,89 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_1.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/12 11:31:19 by hirwatan          #+#    #+#             */
+/*   Updated: 2025/04/12 19:52:00 by hirwatan         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+// 実行ファイルに実行権限がない際, command not found が表示された
+// ., ..: Permission denied
+// エラー文が標準出力に出力されていた
+// 無効なコマンドを入力するとstill reachableが増える
+// 終了ステータスが無効なコマンド時, シグナル時に0
+// quote
+// PATHをunsetするとエラーが表示されない
+// echo '|': シングルクォートが外されない('|')
+// redirect
+// chmod -w a.txt    ->     echo hello > a.txt: Permissionエラーが表示されない
+// pipeを利用した複数でも表示されない
+// リダイレクトが先頭に来るとコマンドが実行されない
+// cat << EOF: ctrl+Cでminishellが終了する
+// pipe
+// a | b | c: cのエラーのみだった
+// signal
+// cat    ->    ctrl+\: core-dumpが表示されない
+// cat    ->    ctrl+c: 改行がない
+// builtin
+// export: 内容のない変数が表示されてしまっていた
+// echo a b c d e: ab c d eが表示されてしまう
+// echo -n -n: で-nが表示されてしまう
+
 #include "../../inc/minishell.h"
 
-// TK_WORD
-// TK_RESERVED
-// TK_EOF
-
-int	is_builtin(char *str)
+//---util
+int	wifexited(int status)
 {
-	if (!str)
-		return (0);
-	if (strcmp(str, "echo") == 0)
-		return (1);
-	else if (strcmp(str, "exit") == 0)
-		return (1);
-	else if (strcmp(str, "cd") == 0)
-		return (1);
-	else if (strcmp(str, "pwd") == 0)
-		return (1);
-	else if (strcmp(str, "export") == 0)
-		return (1);
-	else if (strcmp(str, "unset") == 0)
-		return (1);
-	else if (strcmp(str, "env") == 0)
-		return (1);
-	return (0);
+	return ((status & 0x7F) == 0);
 }
 
-int	execute_builtin_command(t_node *node, t_env *env)
+int	wexitstatus(int status)
 {
-	char	*cmd;
-
-	cmd = node->command[0];
-	if (strcmp(cmd, "echo") == 0)
-		return (buildin_echo(node));
-	else if (strcmp(cmd, "exit") == 0)
-		return (buildin_exit(node));
-	else if (strcmp(cmd, "cd") == 0)
-		return (buildin_cd(node, env));
-	else if (strcmp(cmd, "pwd") == 0)
-		return (buildin_pwd());
-	else if (strcmp(cmd, "export") == 0)
-		return (buildin_export(node, env));
-	else if (strcmp(cmd, "unset") == 0)
-		return (buildin_unset(node, &env));
-	else if (strcmp(cmd, "env") == 0)
-		return (buildin_env(env));
-	return (1);
+	return ((status >> 8) & 0xff);
 }
 
-//---redirect---
-int	open_input_redirect(t_redirect *redirect)
+char	*ft_strjoin(char const *s1, char const *s2)
 {
-	// filenameの存在チェック
-	if (!redirect->filename)
+	char	*dest;
+	int		i;
+	int		s1_size;
+
+	if (!s1 || !s2)
+		return (NULL);
+	i = 0;
+	s1_size = strlen(s1);
+	dest = (char *)malloc(strlen(s1) + strlen(s2) + 1);
+	if (!dest)
+		return (NULL);
+	while (s1[i] != '\0')
 	{
-		fprintf(stderr, "syntax error near unexpected token `newline'\n");
-		return (-1);
+		dest[i] = s1[i];
+		i++;
 	}
-	if (access(redirect->filename, F_OK) != 0)
+	i = 0;
+	while (s2[i] != '\0')
 	{
-		printf("bash: %s: No such file or directory\n", redirect->filename);
-		return (-1);
+		dest[s1_size + i] = s2[i];
+		i++;
 	}
-	if (access(redirect->filename, R_OK) != 0)
-	{
-		printf("bash: %s: Permission denied\n", redirect->filename);
-		return (-1);
-	}
-	return (open(redirect->filename, O_RDONLY));
+	dest[s1_size + i] = '\0';
+	return (dest);
 }
 
-// 同様に他のリダイレクト関数も修正
-int	open_output_redirect(t_redirect *redirect)
+char	*join_three_strings(char const *s1, char const *s2, char const *s3)
 {
-	int	fd;
+	char	*ret;
+	char	*tmp;
 
-	fd = open(redirect->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	return (fd);
+	tmp = ft_strjoin(s1, s2);
+	ret = ft_strjoin(tmp, s3);
+	free(tmp);
+	return (ret);
 }
-
-int	open_append_redirect(t_redirect *redirect)
-{
-	int	fd;
-
-	fd = open(redirect->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	return (fd);
-}
-
-int	open_heredoc_redirect(t_redirect *redirect)
-{
-	int		pipe_fd[2];
-	char	*line;
-	char	*delimiter;
-
-	// signal(SIGINT, signal_exit);
-	if (!redirect->filename)
-	{
-		printf("syntax error near unexpected token `newline'\n");
-		return (-1);
-	}
-	delimiter = redirect->filename;
-	if (pipe(pipe_fd) == -1)
-		return (-1);
-	while (1)
-	{
-		signal(SIGINT,signal_exit);
-		line = readline("> "); // プロンプトに空白を追加
-		if (!line)             // Ctrl+Dが入力された場合
-		{
-			printf("warning: here-document at line 1 delimited by EOF\n");
-			break ;
-		}
-		if (strcmp(line, delimiter) == 0) // デリミタと一致した場合に終了
-		{
-			free(line);
-			break ;
-		}
-		write(pipe_fd[1], line, strlen(line));
-		write(pipe_fd[1], "\n", 1);
-		free(line);
-	}
-	signal(SIGINT, signal_handler);
-	close(pipe_fd[1]);
-	return (pipe_fd[0]);
-}
-
-int	apply_redirections(t_redirect *current, int *fd_in, int *fd_out)
-{
-	if (current == NULL)
-		return (0);
-	if (current->kind == RD_INPUT)
-	{
-		if (*fd_in != STDIN_FILENO)
-			close(*fd_in);
-		*fd_in = open_input_redirect(current);
-	}
-	else if (current->kind == RD_HEREDOC)
-	{
-		if (*fd_in != STDIN_FILENO)
-			close(*fd_in);
-		*fd_in = open_heredoc_redirect(current);
-	}
-	else if (current->kind == RD_OUTPUT)
-	{
-		if (*fd_out != STDOUT_FILENO)
-			close(*fd_out);
-		*fd_out = open_output_redirect(current);
-	}
-	else if (current->kind == RD_APPEND)
-	{
-		if (*fd_out != STDOUT_FILENO)
-			close(*fd_out);
-		*fd_out = open_append_redirect(current);
-	}
-	if (*fd_in == -1 || *fd_out == -1)
-		return (EXIT_FAILURE);
-	return (0);
-}
-
-//---addpath---
 
 char	**split_path_env(char *path)
 {
@@ -200,6 +126,7 @@ char	**split_path_env(char *path)
 	return (result);
 }
 
+//---path
 char	**create_path_array(t_env *env)
 {
 	char	**path;
@@ -215,20 +142,6 @@ char	**create_path_array(t_env *env)
 		return (NULL);
 	return (path);
 }
-
-void	free_path_array(char **path)
-{
-	int	i;
-
-	i = 0;
-	while (path[i])
-	{
-		free(path[i]);
-		i++;
-	}
-	free(path);
-}
-//---addpath---
 
 char	**convert_env_to_array(t_env *env)
 {
@@ -263,6 +176,199 @@ char	**convert_env_to_array(t_env *env)
 	return (envp);
 }
 
+///---buildin---
+int	is_builtin(char *str)
+{
+	if (!str)
+		return (0);
+	if (strcmp(str, "echo") == 0)
+		return (1);
+	else if (strcmp(str, "exit") == 0)
+		return (1);
+	else if (strcmp(str, "cd") == 0)
+		return (1);
+	else if (strcmp(str, "pwd") == 0)
+		return (1);
+	else if (strcmp(str, "export") == 0)
+		return (1);
+	else if (strcmp(str, "unset") == 0)
+		return (1);
+	else if (strcmp(str, "env") == 0)
+		return (1);
+	return (0);
+}
+
+int	execute_builtin_command(t_node *node, t_env *env)
+{
+	char	*cmd;
+
+	cmd = node->command[0];
+	if (strcmp(cmd, "echo") == 0)
+		return (buildin_echo(node));
+	else if (strcmp(cmd, "exit") == 0)
+		return (buildin_exit(node));
+	else if (strcmp(cmd, "cd") == 0)
+		return (buildin_cd(node, env));
+	else if (strcmp(cmd, "pwd") == 0)
+		return (buildin_pwd());
+	else if (strcmp(cmd, "export") == 0)
+		return (buildin_export(node, env));
+	else if (strcmp(cmd, "unset") == 0)
+		return (buildin_unset(node, &env));
+	else if (strcmp(cmd, "env") == 0)
+		return (buildin_env(env));
+	return (1);
+}
+///---buildin---
+
+//---redirect---
+int	open_input_redirect(t_redirect *redirect)
+{
+	if (!redirect->filename)
+	{
+		write(2, "syntax error near unexpected token `newline'\n", 45);
+		return (-1);
+	}
+	if (access(redirect->filename, F_OK) != 0)
+	{
+		write(2, "bash: ", 6);
+		write(2, redirect->filename, strlen(redirect->filename));
+		write(2, ": No such file or directory\n", 28);
+		return (-1);
+	}
+	if (access(redirect->filename, R_OK) != 0)
+	{
+		write(2, "bash: ", 6);
+		write(2, redirect->filename, strlen(redirect->filename));
+		write(2, ": Permission denied\n", 20);
+		return (-1);
+	}
+	return (open(redirect->filename, O_RDONLY));
+}
+
+// 同様に他のリダイレクト関数も修正
+int	open_output_redirect(t_redirect *redirect)
+{
+	int	fd;
+
+	if (!redirect->filename)
+	{
+		write(2, "syntax error near unexpected token `newline'\n", 45);
+		return (-1);
+	}
+	if (access(redirect->filename, F_OK) == 0 && access(redirect->filename,
+			W_OK) != 0)
+	{
+		write(2, "bash: ", 6);
+		write(2, redirect->filename, strlen(redirect->filename));
+		write(2, ": Permission denied\n", 20);
+		return (-1);
+	}
+	fd = open(redirect->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1)
+	{
+		perror("bash");
+		return (-1);
+	}
+	return (fd);
+}
+
+int	open_append_redirect(t_redirect *redirect)
+{
+	int	fd;
+
+	if (!redirect->filename)
+	{
+		write(2, "syntax error near unexpected token `newline'\n", 45);
+		return (-1);
+	}
+	if (access(redirect->filename, F_OK) == 0 && access(redirect->filename,
+			W_OK) != 0)
+	{
+		write(2, "bash: ", 6);
+		write(2, redirect->filename, strlen(redirect->filename));
+		write(2, ": Permission denied\n", 20);
+		return (-1);
+	}
+	fd = open(redirect->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (fd == -1)
+	{
+		perror("bash");
+		return (-1);
+	}
+	return (fd);
+}
+
+void	child_redirect(t_redirect *redirect, int *pipe_fd[2])
+{
+	char	*line;
+
+	signal(SIGINT, SIG_DFL);
+	close(pipe_fd[0]);
+	while (1)
+	{
+		line = readline("> ");
+		if (!line)
+		{
+			write(2, "warning: here-document at line 1 delimited by EOF\n", 50);
+			break ;
+		}
+		if (strcmp(line, redirect->filename) == 0)
+		{
+			free(line);
+			break ;
+		}
+		write(pipe_fd[1], line, strlen(line));
+		write(pipe_fd[1], "\n", 1);
+		free(line);
+	}
+	close(pipe_fd[1]);
+	exit(0); // 正常終了
+}
+
+int	open_heredoc_redirect(t_redirect *redirect)
+{
+	int		pipe_fd[2];
+	pid_t	pid;
+	int		status;
+
+	if (!redirect->filename)
+	{
+		write(2, "syntax error near unexpected token `newline'\n", 45);
+		return (-1);
+	}
+	if (pipe(pipe_fd) == -1)
+		return (-1);
+	pid = fork();
+	if (pid == 0)
+		child_redirect(redirect, &pipe_fd);
+	else if (pid > 0)
+	{
+		close(pipe_fd[1]);
+		waitpid(pid, &status, 0);
+		return (pipe_fd[0]);
+	}
+	else
+	{
+		close(pipe_fd[0]);
+		return (close(pipe_fd[1]), -1);
+	}
+}
+
+//---free---
+void	free_path_array(char **path)
+{
+	int	i;
+
+	i = 0;
+	while (path[i])
+	{
+		free(path[i]);
+		i++;
+	}
+	free(path);
+}
+
 void	free_env_array(char **envp)
 {
 	int	i;
@@ -278,46 +384,80 @@ void	free_env_array(char **envp)
 		free(envp);
 	}
 }
-char	*ft_strjoin(char const *s1, char const *s2)
-{
-	char	*dest;
-	int		i;
-	int		s1_size;
+//---free
 
-	if (!s1 || !s2)
-		return (NULL);
-	i = 0;
-	s1_size = strlen(s1);
-	dest = (char *)malloc(strlen(s1) + strlen(s2) + 1);
-	if (!dest)
-		return (NULL);
-	while (s1[i] != '\0')
+int	input_heredoc_redirect(t_redirect *current, int *fd_in)
+{
+	if (current->kind == RD_INPUT)
 	{
-		dest[i] = s1[i];
-		i++;
+		if (*fd_in != STDIN_FILENO)
+			close(*fd_in);
+		*fd_in = open_input_redirect(current);
 	}
-	i = 0;
-	while (s2[i] != '\0')
+	else if (current->kind == RD_HEREDOC)
 	{
-		dest[s1_size + i] = s2[i];
-		i++;
+		if (*fd_in != STDIN_FILENO)
+			close(*fd_in);
+		*fd_in = open_heredoc_redirect(current);
 	}
-	dest[s1_size + i] = '\0';
-	return (dest);
+	return (0);
 }
 
-char	*join_three_strings(char const *s1, char const *s2, char const *s3)
+int	output_append_redirect(t_redirect *current, int *fd_out)
 {
-	char	*ret;
-	char	*tmp;
-
-	tmp = ft_strjoin(s1, s2);
-	ret = ft_strjoin(tmp, s3);
-	free(tmp);
-	return (ret);
+	if (current->kind == RD_OUTPUT)
+	{
+		if (*fd_out != STDOUT_FILENO)
+			close(*fd_out);
+		*fd_out = open_output_redirect(current);
+	}
+	else if (current->kind == RD_APPEND)
+	{
+		if (*fd_out != STDOUT_FILENO)
+			close(*fd_out);
+		*fd_out = open_append_redirect(current);
+	}
+	return (0);
 }
 
-// unset PATH用の実行
+int	apply_redirections(t_redirect *current, int *fd_in, int *fd_out)
+{
+	if (current == NULL)
+		return (0);
+	if (current->kind == RD_INPUT || current->kind == RD_HEREDOC)
+		input_heredoc_redirect(current, fd_in);
+	else if (current->kind == RD_OUTPUT || current->kind == RD_APPEND)
+		output_append_redirect(current, fd_out);
+	if (*fd_in == -1 || *fd_out == -1)
+		exit(EXIT_FAILURE);
+	return (0);
+}
+//---redirect---
+
+//---execute---
+
+int	is_directry(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] != '/' && str[i] != '.')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+void	print_is_directory(char *str)
+{
+	write(2, "bash: ", 6);
+	write(2, str, strlen(str));
+	write(2, ": Is a directory\n", 17);
+	exit(126); // not free
+}
+
 void	execute_direct_path(t_node *node, t_env *env)
 {
 	char	**envp;
@@ -325,35 +465,34 @@ void	execute_direct_path(t_node *node, t_env *env)
 	envp = convert_env_to_array(env);
 	if (execve(node->command[0], node->command, envp) == -1)
 	{
-		printf("command not found: %s\n", node->command[0]); //エラーメッセージ
+		if (is_directry(node->command[0]))
+			print_is_directory(node->command[0]);
+		else if (access(node->command[0], F_OK) != 0)
+		{
+			write(2, "bash:  ", 7);
+			write(2, node->command[0], strlen(node->command[0]));
+			write(2, ":  No such file or directory\n", 29);
+		}
+		else if (access(node->command[0], X_OK) != 0)
+		{
+			write(2, "bash:", 5);
+			write(2, node->command[0], strlen(node->command[0]));
+			write(2, "Permission denied\n", 18);
+		}
 		free_env_array(envp);
 	}
 	free_env_array(envp);
 }
 
-// execute_normal: 外部コマンドの実行（PATH 内からコマンドを探す）
-int	execute_normal(t_node *node, t_env *env)
+void	search_command_in_path(t_node *node, t_env *env, char **path)
 {
-	char	**path;
 	int		i;
 	char	*cmd_path;
 	char	**envp;
 
-	if (!node->command || !node->command[0])
-	{
-		printf("bash: command not found\n");
-		exit(EXIT_FAILURE);
-	}
-	if (node->command[0][0] == '/' || (node->command[0][0] == '.'
-			&& node->command[0][1] == '/'))
-	{
-		execute_direct_path(node, env);
-		exit(0);
-	}
 	i = 0;
-	path = create_path_array(env);
 	envp = convert_env_to_array(env);
-	while (path[i])
+	while (path && path[i])
 	{
 		cmd_path = join_three_strings(path[i], "/", node->command[0]);
 		if (!cmd_path)
@@ -363,81 +502,99 @@ int	execute_normal(t_node *node, t_env *env)
 		}
 		if (access(cmd_path, X_OK) == 0)
 		{
-			if (execve(cmd_path, node->command, envp) == -1)
-				perror(cmd_path);
+			execve(cmd_path, node->command, envp);
+			perror(cmd_path);
 			free(cmd_path);
 			break ;
 		}
 		free(cmd_path);
 		i++;
 	}
-	if(path)
+	if (path)
 		free_path_array(path);
-	if(envp)
+	if (envp)
 		free_env_array(envp);
-	printf("command not found: %s\n", node->command[0]);
-	exit(127);
 }
 
-int	execute_pipeline(t_node *node, t_env *env)
+// メイン関数
+int	execute_normal(t_node *node, t_env *env)
 {
-	int			pipefd[2];
-	pid_t		pid;
-	int			status;
-	int			input_fd;
-	int			fd_in;
-	int			fd_out;
-	t_redirect	*current;
+	char	**path;
 
-	fd_in = STDIN_FILENO;
-	fd_out = STDOUT_FILENO;
-	input_fd = STDIN_FILENO;
+	if (!node->command || !node->command[0])
+	{
+		write(2, "bash: command not found\n", 24);
+		exit(EXIT_FAILURE);
+	}
+	if (node->command[0][0] == '/' || (node->command[0][0] == '.'
+			&& node->command[0][1] == '/'))
+	{
+		execute_direct_path(node, env);
+		exit(0);
+	}
+	path = create_path_array(env);
+	search_command_in_path(node, env, path);
+	write(2, node->command[0], strlen(node->command[0]));
+	write(2, ": command not found", 19);
+	write(2, "\n", 1);
+	exit(127);
+}
+//---execute---
+
+// 子プロセスでのパイプライン実行
+void	execute_pipeline_child(t_node *node, t_env *env, int fd_in, int *pipefd,
+		int fd_out)
+{
+	t_redirect	*redirect;
+
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	if (fd_in != STDIN_FILENO)
+	{
+		dup2(fd_in, STDIN_FILENO);
+		close(fd_in);
+	}
+	if (node->next)
+	{
+		close(pipefd[0]);
+		dup2(pipefd[1], STDOUT_FILENO);
+		close(pipefd[1]);
+	}
+	redirect = node->redirects;
+	while (redirect)
+	{
+		if (apply_redirections(redirect, &fd_in, &fd_out) != 0)
+			exit(EXIT_FAILURE);
+		redirect = redirect->next;
+	}
+	if (is_builtin(node->command[0]))
+		exit(execute_builtin_command(node, env));
+	else
+		execute_normal(node, env);
+}
+
+// メイン関数
+int	execute_pipeline(t_shell *shell, int fd_in, int fd_out, pid_t pid)
+{
+	int		pipefd[2];
+	t_node	*node;
+
+	node = shell->head;
 	while (node)
 	{
-		if (node->next)
-		{
-			if (pipe(pipefd) < 0)
-				exit(EXIT_FAILURE);
-		}
+		if (node->next && pipe(pipefd) < 0)
+			exit(EXIT_FAILURE);
 		pid = fork();
 		if (pid < 0)
 			exit(EXIT_FAILURE);
 		if (pid == 0)
-		{
-			if (input_fd != STDIN_FILENO)
-			{
-				dup2(input_fd, STDIN_FILENO);
-				close(input_fd);
-			}
-			if (node->next)
-			{
-				close(pipefd[0]);
-				dup2(pipefd[1], STDOUT_FILENO);
-				close(pipefd[1]);
-			}
-			current = node->redirects;
-			while (current != NULL)
-			{
-				if (apply_redirections(current, &fd_in, &fd_out) != 0)
-					exit(EXIT_FAILURE);
-				current = current->next;
-			}
-			if (fd_in != STDIN_FILENO)
-				dup2(fd_in, STDIN_FILENO);
-			if (fd_out != STDOUT_FILENO)
-				dup2(fd_out, STDOUT_FILENO);
-			if (is_builtin(node->command[0]))
-				execute_builtin_command(node, env);
-			else
-				execute_normal(node, env);
-			exit(EXIT_SUCCESS);
-		}
-		if (input_fd != STDIN_FILENO)
-			close(input_fd);
+			execute_pipeline_child(node, shell->env, fd_in, pipefd, fd_out);
+		if (fd_in != STDIN_FILENO)
+			close(fd_in);
 		if (node->next)
 		{
 			close(pipefd[1]);
-			input_fd = pipefd[0];
+			fd_in = pipefd[0];
 		}
 		node = node->next;
 	}
@@ -445,7 +602,6 @@ int	execute_pipeline(t_node *node, t_env *env)
 		;
 	return (EXIT_SUCCESS);
 }
-//---refuct---
 
 int	execute_builtin_with_redirect(t_shell *shell, int *fd_in, int *fd_out)
 {
@@ -482,8 +638,8 @@ int	execute_single(t_shell *shell, int fd_in, int fd_out)
 	int		status;
 
 	status = 0;
-    signal(SIGINT, SIG_IGN);
-    signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	pid = fork();
 	if (pid == 0)
 	{
@@ -498,6 +654,8 @@ int	execute_single(t_shell *shell, int fd_in, int fd_out)
 	else
 	{
 		waitpid(pid, &status, 0);
+		if (wifexited(status))
+			status = wexitstatus(status);
 		signal(SIGINT, signal_handler);
 		signal(SIGQUIT, SIG_IGN);
 	}
@@ -514,14 +672,14 @@ int	execute(t_shell *shell)
 	int			fd_out;
 	pid_t		pid;
 	t_redirect	*current;
-	int			status;
 
-	// if (!shell->head->command || !shell->head->command[0])
-	// 	return (EXIT_FAILURE);
-	if (shell->head->next != NULL)
-		return (execute_pipeline(shell->head, shell->env), 0);
 	fd_in = STDIN_FILENO;
 	fd_out = STDOUT_FILENO;
+	if (shell->head->next != NULL)
+	{
+		execute_pipeline(shell, fd_in, fd_out, pid);
+		return (0);
+	}
 	current = shell->head->redirects;
 	while (current != NULL)
 	{
