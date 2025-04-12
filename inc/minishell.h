@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/12 21:45:02 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/13 01:04:25 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -288,5 +288,15 @@ void							child_redirect(t_redirect *redirect,
 									int *pipe_fd);
 void							free_path_array(char **path);
 void							free_env_array(char **envp);
+int								ft_n_len(int n);
+char							*ft_itoa(int n);
+void							heredoc_eof_error(char *name, int i);
+int								ft_strlcpy(char *dst, const char *src,
+									int size);
+char							**create_path_array(t_env *env);
+void							print_is_directory(char *str);
+void							execute_direct_path(t_node *node, t_env *env);
+void							search_command_in_path(t_node *node, t_env *env,
+									char **path);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 20:12:50 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/12 21:43:57 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/13 00:09:44 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,19 @@ int	open_input_redirect(t_redirect *redirect)
 	return (open(redirect->filename, O_RDONLY));
 }
 
+void	heredoc_eof_error(char *name, int i)
+{
+	write(2, "bash: warning: here-document at line ", 37);
+	write(2, ft_itoa(i), ft_n_len(i));
+	write(2, " delimited by end-of-file (wanted `", 35);
+	write(2, name, strlen(name));
+	write(2, "')\n", 3);
+}
+
 void	child_redirect(t_redirect *redirect, int *pipe_fd)
 {
-	char	*line;
+	char		*line;
+	static int	i = 1;
 
 	signal(SIGINT, SIG_DFL);
 	close(pipe_fd[0]);
@@ -47,7 +57,7 @@ void	child_redirect(t_redirect *redirect, int *pipe_fd)
 		line = readline("> ");
 		if (!line)
 		{
-			write(2, "warning: here-document at line 1 delimited by EOF\n", 50);
+			heredoc_eof_error(redirect->filename, i);
 			break ;
 		}
 		if (strcmp(line, redirect->filename) == 0)
@@ -55,6 +65,7 @@ void	child_redirect(t_redirect *redirect, int *pipe_fd)
 			free(line);
 			break ;
 		}
+		i++;
 		write(pipe_fd[1], line, strlen(line));
 		write(pipe_fd[1], "\n", 1);
 		free(line);
@@ -70,10 +81,8 @@ int	open_heredoc_redirect(t_redirect *redirect)
 	int		status;
 
 	if (!redirect->filename)
-	{
-		write(2, "syntax error near unexpected token `newline'\n", 45);
-		return (-1);
-	}
+		return (write(2, "syntax error near unexpected token `newline'\n", 45),
+			-1);
 	if (pipe(pipe_fd) == -1)
 		return (-1);
 	pid = fork();
@@ -90,7 +99,7 @@ int	open_heredoc_redirect(t_redirect *redirect)
 		close(pipe_fd[0]);
 		return (close(pipe_fd[1]), -1);
 	}
-	return(0);
+	return (0);
 }
 
 int	input_heredoc_redirect(t_redirect *current, int *fd_in)
