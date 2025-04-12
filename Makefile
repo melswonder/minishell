@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+         #
+#    By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/06 20:58:32 by hirwatan          #+#    #+#              #
-#    Updated: 2025/04/12 03:39:57 by kiwasa           ###   ########.fr        #
+#    Updated: 2025/04/12 14:54:57 by hirwatan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,7 @@ SRCS = 	src/tokenizer/tokenizer.c \
 		src/buildin/buildin_export_utils.c \
 		src/buildin/buildin_export_utils2.c \
 		src/minishell/minishell.c \
-		src/execute/execute.c \
+		src/execute/execute_1.c \
 		src/expand/expand_quote.c \
 		src/expand/expand_redirect.c \
 		src/expand/expand_special.c \

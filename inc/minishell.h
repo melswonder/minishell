@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/12 04:23:22 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/12 18:25:09 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@
 
 # define SINGLE_QUOTE_CHAR '\''
 # define DOUBLE_QUOTE_CHAR '"'
+#define SUCCESS 1
+#define FAILED 0
 
 extern volatile sig_atomic_t	g_signal;
 

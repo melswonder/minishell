@@ -516,8 +516,8 @@ int	execute(t_shell *shell)
 	t_redirect	*current;
 	int			status;
 
-	if (!shell->head->command || !shell->head->command[0])
-		return (EXIT_FAILURE);
+	// if (!shell->head->command || !shell->head->command[0])
+	// 	return (EXIT_FAILURE);
 	if (shell->head->next != NULL)
 		return (execute_pipeline(shell->head, shell->env), 0);
 	fd_in = STDIN_FILENO;
@@ -532,6 +532,6 @@ int	execute(t_shell *shell)
 	if (is_builtin(shell->head->command[0]))
 		execute_builtin_with_redirect(shell, &fd_in, &fd_out);
 	else //単一コマンド
-		status = execute_single(shell, fd_in, fd_out);
+		shell->status = execute_single(shell, fd_in, fd_out);
 	return (EXIT_SUCCESS);
 }
