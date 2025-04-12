@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/13 01:04:25 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/13 02:54:56 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -298,5 +298,27 @@ void							print_is_directory(char *str);
 void							execute_direct_path(t_node *node, t_env *env);
 void							search_command_in_path(t_node *node, t_env *env,
 									char **path);
+void							execute_child_process(t_node *node, t_env *env,
+									int fd_in, int *pipe_fd);
+void							execute_child_process(t_node *node, t_env *env,
+									int fd_in, int *pipe_fd);
+t_redirect						*connect_redirect_node(t_redirect *redirect,
+									int stdin_fd, int stdout_fd);
+int								execute_normal(t_node *node, t_env *env);
+void							setup_redirections(t_redirect *redirect,
+									int *local_fd_in, int *local_fd_out);
+void							setup_standard_io(int local_fd_in,
+									int local_fd_out, int fd_in);
+void							execute_child_process(t_node *node, t_env *env,
+									int fd_in, int *pipe_fd);
+pid_t							execute_pipeline_node(t_node *node, t_env *env,
+									int fd_in, int *next_pipe);
+int								execute_pipeline(t_shell *shell, int fd_in,
+									int fd_out, pid_t pid);
+void							execute_single_child(t_shell *shell, int fd_in,
+									int fd_out);
+int								execute_single(t_shell *shell, int fd_in,
+									int fd_out);
+int								execute(t_shell *shell);
 
 #endif

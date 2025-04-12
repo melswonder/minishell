@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 20:48:57 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/12 21:02:41 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/13 02:24:41 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,17 +66,20 @@ int	open_append_redirect(t_redirect *redirect)
 
 int	output_append_redirect(t_redirect *current, int *fd_out)
 {
+	int	fd;
+
+	fd = -1;
 	if (current->kind == RD_OUTPUT)
-	{
-		if (*fd_out != STDOUT_FILENO)
-			close(*fd_out);
-		*fd_out = open_output_redirect(current);
-	}
+		fd = open_output_redirect(current);
 	else if (current->kind == RD_APPEND)
+		fd = open_append_redirect(current);
+	if (fd != -1)
 	{
 		if (*fd_out != STDOUT_FILENO)
 			close(*fd_out);
-		*fd_out = open_append_redirect(current);
+		*fd_out = fd;
 	}
+	if (fd == -1)
+		return (-1);
 	return (0);
 }

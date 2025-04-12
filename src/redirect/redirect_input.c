@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 20:12:50 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/13 00:09:44 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/13 02:45:02 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,15 @@ int	open_input_redirect(t_redirect *redirect)
 
 void	heredoc_eof_error(char *name, int i)
 {
+	char	*num_str;
+
 	write(2, "bash: warning: here-document at line ", 37);
-	write(2, ft_itoa(i), ft_n_len(i));
+	num_str = ft_itoa(i);
+	if (num_str)
+	{
+		write(2, num_str, ft_n_len(i));
+		free(num_str);
+	}
 	write(2, " delimited by end-of-file (wanted `", 35);
 	write(2, name, strlen(name));
 	write(2, "')\n", 3);
@@ -104,17 +111,20 @@ int	open_heredoc_redirect(t_redirect *redirect)
 
 int	input_heredoc_redirect(t_redirect *current, int *fd_in)
 {
+	int	fd;
+
+	fd = -1;
 	if (current->kind == RD_INPUT)
-	{
-		if (*fd_in != STDIN_FILENO)
-			close(*fd_in);
-		*fd_in = open_input_redirect(current);
-	}
+		fd = open_input_redirect(current);
 	else if (current->kind == RD_HEREDOC)
+		fd = open_heredoc_redirect(current);
+	if (fd != -1)
 	{
 		if (*fd_in != STDIN_FILENO)
 			close(*fd_in);
-		*fd_in = open_heredoc_redirect(current);
+		*fd_in = fd;
 	}
+	if (fd == -1)
+		return (-1);
 	return (0);
 }

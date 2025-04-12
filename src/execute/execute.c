@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 11:31:19 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/12 21:27:58 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/13 03:00:08 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,131 +58,61 @@ int	execute_normal(t_node *node, t_env *env)
 	exit(127);
 }
 
-// void	execute_pipeline_child(t_shell *shell, int fd_in, int *pipefd,
-// 		int fd_out)
-// {
-// 	t_redirect	*redirect;
-
-// 	signal(SIGINT, SIG_DFL);
-// 	signal(SIGQUIT, SIG_DFL);
-// 	if (fd_in != STDIN_FILENO)
-// 	{
-// 		dup2(fd_in, STDIN_FILENO);
-// 		close(fd_in);
-// 	}
-// 	if (shell->head->next)
-// 	{
-// 		close(pipefd[0]);
-// 		dup2(pipefd[1], STDOUT_FILENO);
-// 		close(pipefd[1]);
-// 	}
-// 	redirect = shell->head->redirects;
-// 	while (redirect)
-// 	{
-// 		if (apply_redirections(redirect, &fd_in, &fd_out) != 0)
-// 			exit(EXIT_FAILURE);
-// 		redirect = redirect->next;
-// 	}
-// 	if (is_builtin(shell->head->command[0]))
-// 		exit(execute_builtin_command(shell->head, shell->env));
-// 	else
-// 		execute_normal(shell->head, shell->env);
-// }
-
-// 子プロセスでのパイプライン実行
-void	execute_pipeline_child(t_node *node, t_env *env, int fd_in, int *pipefd,
-		int fd_out)
+// リダイレクトを適用する
+void	setup_redirections(t_redirect *redirect, int *local_fd_in,
+		int *local_fd_out)
 {
-	t_redirect	*redirect;
-
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
-	if (fd_in != STDIN_FILENO)
-	{
-		dup2(fd_in, STDIN_FILENO);
-		close(fd_in);
-	}
-	if (node->next)
-	{
-		close(pipefd[0]);
-		dup2(pipefd[1], STDOUT_FILENO);
-		close(pipefd[1]);
-	}
-	redirect = node->redirects;
 	while (redirect)
 	{
-		if (apply_redirections(redirect, &fd_in, &fd_out) != 0)
+		if (apply_redirections(redirect, local_fd_in, local_fd_out) != 0)
 			exit(EXIT_FAILURE);
 		redirect = redirect->next;
 	}
-	if (is_builtin(node->command[0]))
-		exit(execute_builtin_command(node, env));
-	else
-		execute_normal(node, env);
 }
 
-// メイン関数
+pid_t	execute_pipeline_node(t_node *node, t_env *env, int fd_in,
+		int *next_pipe)
+{
+	int		pipe_fd[2];
+	pid_t	pid;
+
+	if (node->next && pipe(pipe_fd) < 0)
+		exit(EXIT_FAILURE);
+	pid = fork();
+	if (pid < 0)
+		exit(EXIT_FAILURE);
+	if (pid == 0)
+	{
+		if (node->next)
+			execute_child_process(node, env, fd_in, pipe_fd);
+		else
+			execute_child_process(node, env, fd_in, next_pipe);
+	}
+	if (fd_in != STDIN_FILENO)
+		close(fd_in);
+	if (node->next)
+	{
+		close(pipe_fd[1]);
+		*next_pipe = pipe_fd[0];
+	}
+	return (pid);
+}
+
 int	execute_pipeline(t_shell *shell, int fd_in, int fd_out, pid_t pid)
 {
-	int		pipefd[2];
-	t_node	*node;
+	t_node	*current;
+	int		next_fd;
 
-	node = shell->head;
-	while (node)
+	current = shell->head;
+	next_fd = fd_in;
+	while (current)
 	{
-		if (node->next && pipe(pipefd) < 0)
-			exit(EXIT_FAILURE);
-		pid = fork();
-		if (pid < 0)
-			exit(EXIT_FAILURE);
-		if (pid == 0)
-			execute_pipeline_child(node, shell->env, fd_in, pipefd, fd_out);
-		if (fd_in != STDIN_FILENO)
-			close(fd_in);
-		if (node->next)
-		{
-			close(pipefd[1]);
-			fd_in = pipefd[0];
-		}
-		node = node->next;
+		pid = execute_pipeline_node(current, shell->env, next_fd, &next_fd);
+		current = current->next;
 	}
 	while (wait(NULL) > 0)
 		;
 	return (EXIT_SUCCESS);
-}
-
-int	execute_single(t_shell *shell, int fd_in, int fd_out)
-{
-	pid_t	pid;
-	int		status;
-
-	status = 0;
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
-	pid = fork();
-	if (pid == 0)
-	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
-		if (fd_in != STDIN_FILENO)
-			dup2(fd_in, STDIN_FILENO);
-		if (fd_out != STDOUT_FILENO)
-			dup2(fd_out, STDOUT_FILENO);
-		execute_normal(shell->head, shell->env);
-	}
-	else
-	{
-		waitpid(pid, &status, 0);
-		if (wifexited(status))
-			status = wexitstatus(status);
-		signal(SIGINT, signal_handler);
-		signal(SIGQUIT, SIG_IGN);
-	}
-	if (fd_in != STDIN_FILENO)
-		close(fd_in);
-	if (fd_out != STDOUT_FILENO)
-		close(fd_out);
-	return (status);
 }
 
 int	execute(t_shell *shell)
