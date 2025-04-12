@@ -6,7 +6,7 @@
 #    By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/06 20:58:32 by hirwatan          #+#    #+#              #
-#    Updated: 2025/04/12 19:52:21 by hirwatan         ###   ########.fr        #
+#    Updated: 2025/04/12 21:17:33 by hirwatan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ SRCS = 	src/tokenizer/tokenizer.c \
 		src/parser/redirect_handler.c \
 		src/debug/debug.c \
 		src/signal/signal.c \
+		src/buildin/buildin.c \
 		src/buildin/buildin_echo.c \
 		src/buildin/buildin_exit.c \
 		src/buildin/buildin_cd.c \
@@ -33,12 +34,19 @@ SRCS = 	src/tokenizer/tokenizer.c \
 		src/buildin/buildin_export_utils2.c \
 		src/minishell/minishell.c \
 		src/execute/execute.c \
+		src/execute/execute_utils.c \
+		src/redirect/redirect_input.c \
+		src/redirect/redirect_output.c \
+		src/redirect/redirect.c \
 		src/expand/expand_quote.c \
 		src/expand/expand_redirect.c \
 		src/expand/expand_special.c \
 		src/expand/expand_utils.c \
 		src/expand/expand_variable.c \
+		src/env/env.c \
+		src/path/path.c \
 		src/free/free.c \
+		src/free/free_exec.c \
 		src/init/init.c \
 		src/main.c
 

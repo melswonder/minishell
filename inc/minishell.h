@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/12 18:25:09 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/12 21:45:02 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@
 
 # define SINGLE_QUOTE_CHAR '\''
 # define DOUBLE_QUOTE_CHAR '"'
-#define SUCCESS 1
-#define FAILED 0
+# define SUCCESS 1
+# define FAILED 0
 
 extern volatile sig_atomic_t	g_signal;
 
@@ -112,8 +112,8 @@ t_redirect						*new_redirect(t_redirect_kind kind,
 									char *filename);
 void							add_redirect_to_node(t_node *node,
 									t_redirect *redirect);
-t_token							*handle_redirects(t_node *node, \
-									t_token *token, t_shell *shell);
+t_token							*handle_redirects(t_node *node, t_token *token,
+									t_shell *shell);
 
 //---init---
 t_env							*init_env(char **envp);
@@ -200,6 +200,21 @@ int								execute_simple_command(t_node *node,
 
 //---buildin---
 
+//---redirect---
+int								apply_redirections(t_redirect *current,
+									int *fd_in, int *fd_out);
+int								input_heredoc_redirect(t_redirect *current,
+									int *fd_in);
+int								open_input_redirect(t_redirect *redirect);
+int								open_heredoc_redirect(t_redirect *redirect);
+
+int								open_output_redirect(t_redirect *redirect);
+int								open_append_redirect(t_redirect *redirect);
+int								output_append_redirect(t_redirect *current,
+									int *fd_out);
+
+//---redirect---
+
 char							*ft_strjoin(char const *s1, char const *s2);
 int								execute_builtin_command(t_node *node,
 									t_env *env);
@@ -224,6 +239,9 @@ static char						*extract_arg(char *line, int *index);
 int								is_valid_number(char *arg,
 									unsigned long long *num);
 
+int								is_builtin(char *str);
+int								execute_builtin_command(t_node *node,
+									t_env *env);
 int								buildin_export(t_node *node, t_env *env);
 char							*ft_strjoin_safe(char *s1, char *s2);
 int								is_valid_varname(char *name);
@@ -245,9 +263,30 @@ int								buildin_export(t_node *node, t_env *env);
 
 int								buildin_env(t_env *env);
 int								buildin_pwd(void);
+int								execute_builtin_with_redirect(t_shell *shell,
+									int *fd_in, int *fd_out);
 //---buildin---
 
 //---execute---
 int								execute(t_shell *shell);
+
+//---exec utils---
+int								wexitstatus(int status);
+int								wifexited(int status);
+char							*join_three_strings(char const *s1,
+									char const *s2, char const *s3);
+char							*ft_strjoin(char const *s1, char const *s2);
+char							**split_path_env(char *path);
+char							**convert_env_to_array(t_env *env);
+int								is_directry(char *str);
+char							**create_path_array(t_env *env);
+void							print_is_directory(char *str);
+void							execute_direct_path(t_node *node, t_env *env);
+void							search_command_in_path(t_node *node, t_env *env,
+									char **path);
+void							child_redirect(t_redirect *redirect,
+									int *pipe_fd);
+void							free_path_array(char **path);
+void							free_env_array(char **envp);
 
 #endif
