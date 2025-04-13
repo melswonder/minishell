@@ -1,36 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/10 22:24:01 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 00:40:04 by kiwasa           ###   ########.fr       */
+/*   Created: 2024/10/26 19:14:20 by kiwasa            #+#    #+#             */
+/*   Updated: 2024/10/26 19:28:36 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/minishell.h"
+#include <stddef.h>
+#include <stdlib.h>
+#include "libft.h"
 
-int	main(int argc, char **argv, char **envp)
+char	*ft_strjoin(char const *s1, char const *s2)
 {
-	t_env	*env;
-	t_shell	*shell;
+	char	*str;
+	size_t	len;
 
-	if (argc != 1)
-	{
-		exit(1);
-	}
-	(void)argc;
-	(void)argv;
-	env = init_env(envp);
-	if (!env)
-		return (1);
-	shell = init_shell(env);
-	if (!shell)
-		return (1);
-	minishell_loop(shell);
-	free(shell);
-	free_env(env);
-	return (0);
+	len = ft_strlen(s1) + ft_strlen(s2) + 1;
+	str = (char *)malloc(len);
+	if (str == NULL)
+		return (NULL);
+	ft_strlcpy(str, (char *)s1, len);
+	ft_strlcat(str, (char *)s2, len);
+	return (str);
 }

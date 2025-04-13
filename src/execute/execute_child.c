@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 02:57:12 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/13 22:12:21 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 00:43:53 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	execute_single_child(t_shell *shell, int fd_in, int fd_out)
 
 void	execute_child_process(t_node *node, t_env *env, int fd_in, int *pipe_fd)
 {
-	t_redirect	*redirect;
+	// t_redirect	*redirect;
 	int			local_fd_in;
 	int			local_fd_out;
 

@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 00:42:37 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/12 03:57:44 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 01:07:06 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,7 @@ static char	*copy_word(const char *start, int len)
 	word = malloc(len + 1);
 	if (!word)
 		return (NULL);
-	strncpy(word, start, len);
-	word[len] = '\0';
+	ft_strlcpy(word, start, len + 1);
 	return (word);
 }
 

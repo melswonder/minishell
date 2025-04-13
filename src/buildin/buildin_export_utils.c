@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   buildin_export_utils.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 13:27:30 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/11 13:37:43 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 02:30:33 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ char	*ft_strjoin_safe(char *s1, char *s2)
 		s1 = "";
 	if (!s2)
 		s2 = "";
-	len1 = strlen(s1);
-	len2 = strlen(s2);
+	len1 = ft_strlen(s1);
+	len2 = ft_strlen(s2);
 	result = malloc(len1 + len2 + 1);
 	if (!result)
 		return (NULL);

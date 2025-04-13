@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:40:00 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/11 01:42:40 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 02:05:39 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,13 @@ bool	is_variable(char *s)
 char	*get_env_values(t_shell *shell, const char *key)
 {
 	t_env	*env;
+	int		len;
 
 	env = shell->env;
+	len = ft_strlen(key);
 	while (env)
 	{
-		if (strcmp(env->key, key) == 0)
+		if (ft_strncmp(env->key, key, len) == 0)
 			return (env->value);
 		env = env->next;
 	}
@@ -36,7 +38,7 @@ void	expand_variable_str(char **dst, char **rest, char *p, t_shell *shell)
 	char	*name;
 	char	*value;
 
-	name = calloc(1, sizeof(char));
+	name = ft_calloc(1, sizeof(char));
 	if (name == NULL)
 		printf("calloc");
 	if (*p != '$')

@@ -1,36 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_lstclear.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/10 22:24:01 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 00:40:04 by kiwasa           ###   ########.fr       */
+/*   Created: 2024/10/26 19:12:27 by kiwasa            #+#    #+#             */
+/*   Updated: 2024/10/27 15:49:12 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/minishell.h"
+#include "libft.h"
+#include <stdlib.h>
 
-int	main(int argc, char **argv, char **envp)
+void	ft_lstclear(t_list **lst, void (*del)(void *))
 {
-	t_env	*env;
-	t_shell	*shell;
+	t_list	*tmp;
 
-	if (argc != 1)
+	if (lst == NULL || del == NULL)
+		return ;
+	while (*lst != NULL)
 	{
-		exit(1);
+		tmp = (*lst)->next;
+		del((*lst)->content);
+		free(*lst);
+		*lst = tmp;
 	}
-	(void)argc;
-	(void)argv;
-	env = init_env(envp);
-	if (!env)
-		return (1);
-	shell = init_shell(env);
-	if (!shell)
-		return (1);
-	minishell_loop(shell);
-	free(shell);
-	free_env(env);
-	return (0);
+	*lst = NULL;
 }

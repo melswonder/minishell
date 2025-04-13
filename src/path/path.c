@@ -3,34 +3,34 @@
 /*                                                        :::      ::::::::   */
 /*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 21:16:10 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/13 01:03:37 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 02:03:00 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
 
-int	ft_strlcpy(char *dst, const char *src, int size)
-{
-	int	src_len;
-	int	i;
+// int	ft_strlcpy(char *dst, const char *src, int size)
+// {
+// 	int	src_len;
+// 	int	i;
 
-	src_len = 0;
-	i = 0;
-	while (src[src_len] != '\0')
-		src_len++;
-	if (size == 0)
-		return (src_len);
-	while (src[i] != '\0' && i < size - 1)
-	{
-		dst[i] = src[i];
-		i++;
-	}
-	dst[i] = '\0';
-	return (src_len);
-}
+// 	src_len = 0;
+// 	i = 0;
+// 	while (src[src_len] != '\0')
+// 		src_len++;
+// 	if (size == 0)
+// 		return (src_len);
+// 	while (src[i] != '\0' && i < size - 1)
+// 	{
+// 		dst[i] = src[i];
+// 		i++;
+// 	}
+// 	dst[i] = '\0';
+// 	return (src_len);
+// }
 
 char	**create_path_array(t_env *env)
 {

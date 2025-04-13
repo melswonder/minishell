@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:11:22 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/12 04:15:05 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 02:05:09 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ t_token	*handle_redirects(t_node *node, t_token *token, t_shell *shell)
 {
 	while (token != NULL && token->kind == TK_RESERVED)
 	{
-		if (strcmp(token->word, "|") == 0)
+		if (ft_strncmp(token->word, "|", 1) == 0)
 			break ;
 		token = handle_redirect(node, token, shell);
 		if (!token)

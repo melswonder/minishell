@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 11:31:19 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/13 22:11:29 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 00:43:29 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,7 @@ int	execute_pipeline(t_shell *shell, int fd_in, int fd_out, pid_t pid)
 	t_node	*current;
 	int		next_fd;
 
+	(void) fd_out;
 	current = shell->head;
 	next_fd = fd_in;
 	while (current)
@@ -124,6 +125,7 @@ int	execute(t_shell *shell)
 
 	fd_in = STDIN_FILENO;
 	fd_out = STDOUT_FILENO;
+	pid = 0;
 	if (shell->head->next != NULL)
 	{
 		execute_pipeline(shell, fd_in, fd_out, pid);

@@ -1,36 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/10 22:24:01 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 00:40:04 by kiwasa           ###   ########.fr       */
+/*   Created: 2024/10/26 19:14:27 by kiwasa            #+#    #+#             */
+/*   Updated: 2024/10/26 19:29:48 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/minishell.h"
+#include <stddef.h>
 
-int	main(int argc, char **argv, char **envp)
+size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 {
-	t_env	*env;
-	t_shell	*shell;
+	size_t	i;
+	size_t	src_len;
 
-	if (argc != 1)
+	i = 0;
+	while (src[i])
+		i++;
+	src_len = i;
+	if (size == 0)
+		return (src_len);
+	i = 0;
+	while (i < size - 1 && src[i])
 	{
-		exit(1);
+		dst[i] = src[i];
+		i++;
 	}
-	(void)argc;
-	(void)argv;
-	env = init_env(envp);
-	if (!env)
-		return (1);
-	shell = init_shell(env);
-	if (!shell)
-		return (1);
-	minishell_loop(shell);
-	free(shell);
-	free_env(env);
-	return (0);
+	dst[i] = '\0';
+	return (src_len);
 }

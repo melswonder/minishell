@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   buildin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 12:26:15 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/11 13:37:27 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 02:26:33 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	env_addition(char *arguments, t_env *env)
 	t_env	*new_node;
 	char	*equal_pos;
 
-	equal_pos = strchr(arguments, '=');
+	equal_pos = ft_strchr(arguments, '=');
 	if (!equal_pos)
 		return ;
 	key = strndup(arguments, equal_pos - arguments);
@@ -67,6 +67,7 @@ void	env_appending(char *arguments, t_env *env)
 	char	*plus_pos;
 	char	*new_value;
 
+	new_value = NULL;
 	plus_pos = strstr(arguments, "+=");
 	if (!plus_pos)
 		return ;
@@ -91,6 +92,7 @@ void	env_no_assignment(char *arguments, t_env *env)
 
 	key = strdup(arguments);
 	value = NULL;
+	equal_pos = NULL;
 	if (!is_valid_varname(key))
 	{
 		printf("export: '%s': not a valid identifier\n", arguments);

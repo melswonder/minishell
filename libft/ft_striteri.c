@@ -1,36 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_striteri.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/10 22:24:01 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 00:40:04 by kiwasa           ###   ########.fr       */
+/*   Created: 2024/10/26 19:14:17 by kiwasa            #+#    #+#             */
+/*   Updated: 2024/10/26 19:28:18 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/minishell.h"
-
-int	main(int argc, char **argv, char **envp)
+void	ft_striteri(char *s, void (*f)(unsigned int, char *))
 {
-	t_env	*env;
-	t_shell	*shell;
+	unsigned int	i;
 
-	if (argc != 1)
+	i = 0;
+	while (s[i])
 	{
-		exit(1);
+		f(i, &s[i]);
+		i++;
 	}
-	(void)argc;
-	(void)argv;
-	env = init_env(envp);
-	if (!env)
-		return (1);
-	shell = init_shell(env);
-	if (!shell)
-		return (1);
-	minishell_loop(shell);
-	free(shell);
-	free_env(env);
-	return (0);
 }
+
+// #include <stdio.h>
+
+// void ft_striteri_test(unsigned int i, char *c)
+// {
+// 	if (i % 2 == 0)
+// 		*c = *c - 32;
+// }
+
+// int main()
+// {
+// 	char s[] = "hello world";
+// 	ft_striteri(s, &ft_striteri_test);
+// 	printf("%s\n", s);
+// 	return (0);
+// }

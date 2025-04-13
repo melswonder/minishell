@@ -1,36 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_lstadd_back.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/10 22:24:01 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 00:40:04 by kiwasa           ###   ########.fr       */
+/*   Created: 2024/10/26 19:12:20 by kiwasa            #+#    #+#             */
+/*   Updated: 2024/10/27 15:48:11 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/minishell.h"
+#include "libft.h"
+#include <stdio.h>
 
-int	main(int argc, char **argv, char **envp)
+void	ft_lstadd_back(t_list **lst, t_list *new)
 {
-	t_env	*env;
-	t_shell	*shell;
-
-	if (argc != 1)
-	{
-		exit(1);
-	}
-	(void)argc;
-	(void)argv;
-	env = init_env(envp);
-	if (!env)
-		return (1);
-	shell = init_shell(env);
-	if (!shell)
-		return (1);
-	minishell_loop(shell);
-	free(shell);
-	free_env(env);
-	return (0);
+	if (lst == NULL || new == NULL)
+		return ;
+	if (*lst == NULL)
+		*lst = new;
+	else
+		ft_lstlast(*lst)->next = new;
 }

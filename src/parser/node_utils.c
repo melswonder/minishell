@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:20:50 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/11 01:22:03 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 01:27:36 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ t_redirect	*new_redirect(t_redirect_kind kind, char *filename)
 	if (redirect == NULL)
 		return (NULL);
 	redirect->kind = kind;
-	redirect->filename = strdup(filename);
+	redirect->filename = (filename);
 	if (redirect->filename == NULL)
 	{
 		free(redirect);

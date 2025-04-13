@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:09:15 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/13 21:48:48 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 02:30:03 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static bool	check_pipeline_start(t_token **token, t_shell *shell)
 {
-	if (*token != NULL && strcmp((*token)->word, "|") == 0)
+	if (*token != NULL && ft_strncmp((*token)->word, "|", 1) == 0)
 	{
 		shell->syntax_error = true;
 		return (true);
@@ -34,9 +34,10 @@ static t_node	*parse_command(t_token **token, t_shell *shell)
 
 static bool	check_and_advance_pipeline_token(t_token **token, t_shell *shell)
 {
-	if (*token != NULL && strcmp((*token)->word, "|") == 0)
+	if (*token != NULL && ft_strncmp((*token)->word, "|", 1) == 0)
 	{
-		if ((*token)->next->word && strcmp((*token)->next->word, "|") == 0)
+		if ((*token)->next->word && \
+			ft_strncmp((*token)->next->word, "|", 1) == 0)
 		{
 			shell->syntax_error = true;
 			return (true);

@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:33:48 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/11 01:38:33 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 01:12:17 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 bool	is_alpha_under(char c)
 {
-	return (isalpha(c) || c == '_');
+	return (ft_isalpha(c) || c == '_');
 }
 
 bool	is_alpha_num_under(char c)
@@ -41,11 +41,11 @@ void	append_char(char **dst, char c)
 	size_t	len;
 	char	*new;
 
-	len = strlen(*dst);
-	new = calloc(len + 2, sizeof(char));
+	len = ft_strlen(*dst);
+	new = ft_calloc(len + 2, sizeof(char));
 	if (new == NULL)
 		printf("calloc");
-	strcpy(new, *dst);
+	ft_strlcpy(new, *dst, len + 1);
 	new[len] = c;
 	new[len + 1] = '\0';
 	free(*dst);

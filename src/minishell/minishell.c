@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/13 21:48:26 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 00:40:11 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static void	process_input(char *line, t_shell *shell)
 	free_all_nodes(shell->head);
 }
 
-void	minishell_loop(t_env *env, t_shell *shell)
+void	minishell_loop(t_shell *shell)
 {
 	char	*line;
 

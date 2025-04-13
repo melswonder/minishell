@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 00:45:21 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/11 00:47:17 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 01:27:28 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ t_token	*new_token(t_token_kind kind, char *word)
 	if (!token)
 		return (NULL);
 	token->kind = kind;
-	token->word = strdup(word);
+	token->word = ft_strdup((const char *)word);
 	if (!token->word)
 	{
 		free(token);

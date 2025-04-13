@@ -1,36 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/10 22:24:01 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 00:40:04 by kiwasa           ###   ########.fr       */
+/*   Created: 2024/10/26 19:14:08 by kiwasa            #+#    #+#             */
+/*   Updated: 2024/10/26 19:28:08 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/minishell.h"
+#include <stddef.h>
+#include <stdlib.h>
+#include "libft.h"
 
-int	main(int argc, char **argv, char **envp)
+char	*ft_strdup(const char *s)
 {
-	t_env	*env;
-	t_shell	*shell;
+	char	*str;
+	size_t	len;
 
-	if (argc != 1)
-	{
-		exit(1);
-	}
-	(void)argc;
-	(void)argv;
-	env = init_env(envp);
-	if (!env)
-		return (1);
-	shell = init_shell(env);
-	if (!shell)
-		return (1);
-	minishell_loop(shell);
-	free(shell);
-	free_env(env);
-	return (0);
+	len = ft_strlen(s) + 1;
+	str = (char *)malloc(len);
+	if (str == NULL)
+		return (NULL);
+	return (ft_memcpy(str, s, len));
 }

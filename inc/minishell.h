@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/13 22:15:04 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 02:03:05 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include "../libft/libft.h"
 
 # define SINGLE_QUOTE_CHAR '\''
 # define DOUBLE_QUOTE_CHAR '"'
@@ -136,7 +137,7 @@ void							signal_exit(int sig);
 void							print_node(t_node *node);
 
 //---minishell---
-void							minishell_loop(t_env *env, t_shell *shell);
+void							minishell_loop(t_shell *shell);
 
 //---expand---
 void							expand_variable(t_shell *shell);
@@ -237,7 +238,7 @@ int								buildin_exit(t_node *node);
 int								is_numeric(char *str);
 int								ft_atoull(const char *str,
 									unsigned long long *result);
-static char						*extract_arg(char *line, int *index);
+// static char						*extract_arg(char *line, int *index);
 int								is_valid_number(char *arg,
 									unsigned long long *num);
 
@@ -293,8 +294,8 @@ void							free_env_array(char **envp);
 int								ft_n_len(int n);
 char							*ft_itoa(int n);
 void							heredoc_eof_error(char *name, int i);
-int								ft_strlcpy(char *dst, const char *src,
-									int size);
+// int								ft_strlcpy(char *dst, const char *src,
+// 									int size);
 char							**create_path_array(t_env *env);
 void							print_is_directory(char *str);
 void							execute_direct_path(t_node *node, t_env *env);

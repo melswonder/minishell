@@ -1,36 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_isprint.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/10 22:24:01 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 00:40:04 by kiwasa           ###   ########.fr       */
+/*   Created: 2024/10/26 19:12:14 by kiwasa            #+#    #+#             */
+/*   Updated: 2024/10/26 19:15:16 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/minishell.h"
-
-int	main(int argc, char **argv, char **envp)
+int	ft_isprint(int c)
 {
-	t_env	*env;
-	t_shell	*shell;
-
-	if (argc != 1)
-	{
-		exit(1);
-	}
-	(void)argc;
-	(void)argv;
-	env = init_env(envp);
-	if (!env)
-		return (1);
-	shell = init_shell(env);
-	if (!shell)
-		return (1);
-	minishell_loop(shell);
-	free(shell);
-	free_env(env);
-	return (0);
+	return (c >= 32 && c <= 126);
 }
+
+// #include <stdio.h>
+// int main()
+// {
+// 	printf("%d\n", ft_isprint('a'));
+// 	printf("%d\n", ft_isprint('A'));
+// 	printf("%d\n", ft_isprint('0'));
+// 	printf("%d\n", ft_isprint(' '));
+// 	printf("%d\n", ft_isprint('['));
+// 	printf("%d\n", ft_isprint(127));
+// 	return (0);
+// }

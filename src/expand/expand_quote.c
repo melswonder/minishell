@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:57:10 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/12 03:18:35 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 01:10:11 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ char	*expand_string(t_shell *shell, char *word)
 	if (word == NULL)
 		return (NULL);
 	p = word;
-	new_word = calloc(1, sizeof(char));
+	new_word = ft_calloc(1, sizeof(char));
 	if (new_word == NULL)
 		printf("calloc");
 	while (*p && !is_metacharacter(*p))

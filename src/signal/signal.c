@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 22:17:02 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/12 03:44:32 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 00:37:28 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,6 @@ void	signal_handler(int sig)
 
 void	signal_exit(int sig)
 {
+	(void) sig;
 	exit(1);
 }
