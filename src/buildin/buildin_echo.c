@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   buildin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 13:19:17 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/13 04:33:34 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/13 20:26:23 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ int	check_special_option(char *arg, int *new_line)
 	}
 	return (0);
 }
+
 int	buildin_echo(t_node *node)
 {
 	int	i;
@@ -54,13 +55,13 @@ int	buildin_echo(t_node *node)
 	int	first_arg;
 
 	if (!node->command[1])
-		return (printf("\n"),0);
+		return (printf("\n"), 0);
 	i = 1;
-	new_line = 1; 
+	new_line = 1;
 	first_arg = 1;
 	while (node->command[i] && option_check(node->command[i]))
 	{
-		new_line = 0; 
+		new_line = 0;
 		i++;
 	}
 	while (node->command[i])

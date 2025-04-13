@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/13 02:54:56 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/13 22:15:04 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,8 @@ t_redirect						*new_redirect(t_redirect_kind kind,
 void							add_redirect_to_node(t_node *node,
 									t_redirect *redirect);
 t_token							*handle_redirects(t_node *node, t_token *token,
+									t_shell *shell);
+t_node							*create_redirect_node(t_token **token_ptr,
 									t_shell *shell);
 
 //---init---

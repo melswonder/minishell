@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:09:15 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/12 04:17:43 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/13 21:48:48 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,14 @@ static t_node	*parse_pipeline(t_token **token, t_shell *shell)
 
 	current = NULL;
 	head = NULL;
-	next_node = NULL;
 	if (check_pipeline_start(token, shell))
 		return (NULL);
 	while (*token != NULL && (*token)->kind != TK_EOF)
 	{
-		next_node = parse_command(token, shell);
+		if (*token != NULL && (*token)->kind == TK_RESERVED && head == NULL)
+			next_node = create_redirect_node(token, shell);
+		else
+			next_node = parse_command(token, shell);
 		if (next_node == NULL)
 			return (head);
 		if (head == NULL)
@@ -75,7 +77,6 @@ static t_node	*parse_pipeline(t_token **token, t_shell *shell)
 		if (check_and_advance_pipeline_token(token, shell))
 			return (head);
 	}
-	shell->head = head;
 	return (head);
 }
 

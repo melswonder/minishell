@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:19:43 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/11 01:20:20 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/13 21:46:31 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,25 @@ t_token	*handle_redirect(t_node *node, t_token *token, t_shell *shell)
 		return (NULL);
 	add_redirect_to_node(node, redirect);
 	return (token->next);
+}
+
+t_node	*create_redirect_node(t_token **token_ptr, t_shell *shell)
+{
+	t_node	*node;
+	t_token	*token;
+
+	node = new_node();
+	if (node == NULL)
+		return (NULL);
+	token = *token_ptr;
+	token = handle_redirects(node, token, shell);
+	token = handle_command(node, token);
+	if (token == NULL)
+	{
+		free_node(node);
+		return (NULL);
+	}
+	token = handle_redirects(node, token, shell);
+	*token_ptr = token;
+	return (node);
 }
