@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:14:09 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 01:27:17 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 02:47:04 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ char	**create_command_array(t_token *token, int count)
 		return (NULL);
 	while (i < count)
 	{
-		command[i] = ft_strdup((const char *)token->word);
+		command[i] = ft_strdup(token->word);
 		if (command[i] == NULL)
 		{
 			while (--i > 0)
