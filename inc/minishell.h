@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/14 02:03:05 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 04:00:39 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,7 @@ void							free_env(t_env *env);
 void							signal_handler(int sig);
 void							setup_signal(void);
 void							signal_exit(int sig);
+void							signal_handler_exit(int sig);
 
 //---debug---
 void							print_node(t_node *node);
@@ -294,8 +295,6 @@ void							free_env_array(char **envp);
 int								ft_n_len(int n);
 char							*ft_itoa(int n);
 void							heredoc_eof_error(char *name, int i);
-// int								ft_strlcpy(char *dst, const char *src,
-// 									int size);
 char							**create_path_array(t_env *env);
 void							print_is_directory(char *str);
 void							execute_direct_path(t_node *node, t_env *env);

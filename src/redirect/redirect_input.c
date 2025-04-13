@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 20:12:50 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 03:21:07 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 04:20:10 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,8 @@ void	child_redirect(t_redirect *redirect, int *pipe_fd)
 	char		*line;
 	static int	i = 1;
 
-	signal(SIGINT, SIG_DFL);
+	// signal(SIGINT, SIG_DFL);
+	signal(SIGINT, signal_handler_exit);
 	close(pipe_fd[0]);
 	while (1)
 	{
@@ -67,7 +68,7 @@ void	child_redirect(t_redirect *redirect, int *pipe_fd)
 			heredoc_eof_error(redirect->filename, i);
 			break ;
 		}
-		if (ft_strncmp(line, redirect->filename, ft_strlen(line)) == 0)
+		if (strcmp(line, redirect->filename) == 0)
 		{
 			free(line);
 			break ;

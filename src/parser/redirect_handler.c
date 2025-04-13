@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:19:43 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 02:06:54 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 03:42:21 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,14 @@ t_token	*handle_redirect(t_node *node, t_token *token, t_shell *shell)
 	t_redirect_kind	kind;
 	t_redirect		*redirect;
 
-	if (ft_strncmp(token->word, "<", 1) == 0)
-		kind = RD_INPUT;
-	else if (ft_strncmp(token->word, ">", 1) == 0)
-		kind = RD_OUTPUT;
+	if (ft_strncmp(token->word, "<<", 2) == 0)
+		kind = RD_HEREDOC;
 	else if (ft_strncmp(token->word, ">>", 2) == 0)
 		kind = RD_APPEND;
-	else if (ft_strncmp(token->word, "<<", 2) == 0)
-		kind = RD_HEREDOC;
+	else if (ft_strncmp(token->word, ">", 1) == 0)
+		kind = RD_OUTPUT;
+	else if (ft_strncmp(token->word, "<", 1) == 0)
+		kind = RD_INPUT;
 	else if (ft_strncmp(token->word, "|", 1) == 0)
 		return (token);
 	token = token->next;

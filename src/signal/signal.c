@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 22:17:02 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 00:37:28 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 04:27:36 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,4 +34,16 @@ void	signal_exit(int sig)
 {
 	(void) sig;
 	exit(1);
+}
+
+void	signal_handler_exit(int sig)
+{
+	g_signal = sig;
+	if (sig == SIGINT)
+	{
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+	exit (130);
 }
