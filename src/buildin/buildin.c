@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   buildin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 19:58:15 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/12 21:08:01 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 03:14:43 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,19 @@ int	is_builtin(char *str)
 {
 	if (!str)
 		return (0);
-	if (strcmp(str, "echo") == 0)
+	if (ft_strncmp(str, "echo", 4) == 0)
 		return (1);
-	else if (strcmp(str, "exit") == 0)
+	else if (ft_strncmp(str, "exit", 4) == 0)
 		return (1);
-	else if (strcmp(str, "cd") == 0)
+	else if (ft_strncmp(str, "cd", 2) == 0)
 		return (1);
-	else if (strcmp(str, "pwd") == 0)
+	else if (ft_strncmp(str, "pwd", 3) == 0)
 		return (1);
-	else if (strcmp(str, "export") == 0)
+	else if (ft_strncmp(str, "export", 6) == 0)
 		return (1);
-	else if (strcmp(str, "unset") == 0)
+	else if (ft_strncmp(str, "unset", 5) == 0)
 		return (1);
-	else if (strcmp(str, "env") == 0)
+	else if (ft_strncmp(str, "env", 3) == 0)
 		return (1);
 	return (0);
 }
@@ -38,19 +38,19 @@ int	execute_builtin_command(t_node *node, t_env *env)
 	char	*cmd;
 
 	cmd = node->command[0];
-	if (strcmp(cmd, "echo") == 0)
+	if (ft_strncmp(cmd, "echo", 4) == 0)
 		return (buildin_echo(node));
-	else if (strcmp(cmd, "exit") == 0)
+	else if (ft_strncmp(cmd, "exit", 4) == 0)
 		return (buildin_exit(node));
-	else if (strcmp(cmd, "cd") == 0)
+	else if (ft_strncmp(cmd, "cd", 2) == 0)
 		return (buildin_cd(node, env));
-	else if (strcmp(cmd, "pwd") == 0)
+	else if (ft_strncmp(cmd, "pwd", 3) == 0)
 		return (buildin_pwd());
-	else if (strcmp(cmd, "export") == 0)
+	else if (ft_strncmp(cmd, "export", 6) == 0)
 		return (buildin_export(node, env));
-	else if (strcmp(cmd, "unset") == 0)
+	else if (ft_strncmp(cmd, "unset", 5) == 0)
 		return (buildin_unset(node, &env));
-	else if (strcmp(cmd, "env") == 0)
+	else if (ft_strncmp(cmd, "env", 3) == 0)
 		return (buildin_env(env));
 	return (1);
 }

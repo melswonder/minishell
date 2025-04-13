@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   buildin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 13:22:06 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/11 13:23:17 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 03:09:22 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*ft_getenv(char *str, t_env *env)
 	tmp = env;
 	while (tmp)
 	{
-		if (strcmp(str, tmp->key) == 0)
+		if (ft_strncmp(str, tmp->key, ft_strlen(tmp->key)) == 0)
 			return (tmp->value);
 		tmp = tmp->next;
 	}
@@ -47,11 +47,11 @@ int	set_to_env_value(t_env *env, char *key, char *set_value)
 	tmp = env;
 	while (tmp)
 	{
-		if (strcmp(tmp->key, key) == 0)
+		if (ft_strncmp(tmp->key, key, ft_strlen(tmp->key)) == 0)
 		{
 			if (tmp->value)
 				free(tmp->value);
-			tmp->value = strdup(set_value);
+			tmp->value = ft_strdup(set_value);
 			return (0);
 		}
 		tmp = tmp->next;

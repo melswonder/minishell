@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 22:00:20 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 02:26:27 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 03:17:03 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,12 @@ t_env	*create_init_env_node(char *env_str)
 	if (equal_sign)
 	{
 		new_node->key = strndup(env_str, equal_sign - env_str);
-		new_node->value = strdup(equal_sign + 1);
+		new_node->value = ft_strdup(equal_sign + 1);
 	}
 	else
 	{
-		new_node->key = strdup(env_str);
-		new_node->value = strdup("");
+		new_node->key = ft_strdup(env_str);
+		new_node->value = ft_strdup("");
 	}
 	new_node->next = NULL;
 	return (new_node);

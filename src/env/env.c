@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 21:12:52 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/13 01:04:39 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 03:15:37 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	fill_path_array(char **result, char *path)
 	token = strtok(path, ":");
 	while (token)
 	{
-		result[i++] = strdup(token);
+		result[i++] = ft_strdup(token);
 		token = strtok(NULL, ":");
 	}
 	result[i] = NULL;
@@ -56,7 +56,7 @@ char	**split_path_env(char *path)
 	result = malloc(sizeof(char *) * (count + 1));
 	if (!result)
 		return (NULL);
-	path_dup = strdup(path);
+	path_dup = ft_strdup(path);
 	if (!path_dup)
 	{
 		free(result);
@@ -72,8 +72,8 @@ char	*env_print_join(char *line, char *key, char *value)
 	int	key_len;
 	int	value_len;
 
-	key_len = strlen(key);
-	value_len = strlen(value);
+	key_len = ft_strlen(key);
+	value_len = ft_strlen(value);
 	ft_strlcpy(line, key, key_len + 1);
 	line[key_len] = '=';
 	ft_strlcpy(line + key_len + 1, value, value_len + 1);
@@ -99,7 +99,7 @@ char	**convert_env_to_array(t_env *env)
 	tmp = env;
 	while (tmp)
 	{
-		line = malloc(strlen(tmp->key) + strlen(tmp->value) + 2);
+		line = malloc(strlen(tmp->key) + ft_strlen(tmp->value) + 2);
 		if (!line)
 			break ;
 		envp[i++] = env_print_join(line, tmp->key, tmp->value);

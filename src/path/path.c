@@ -6,31 +6,11 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 21:16:10 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 02:03:00 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 03:19:56 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
-
-// int	ft_strlcpy(char *dst, const char *src, int size)
-// {
-// 	int	src_len;
-// 	int	i;
-
-// 	src_len = 0;
-// 	i = 0;
-// 	while (src[src_len] != '\0')
-// 		src_len++;
-// 	if (size == 0)
-// 		return (src_len);
-// 	while (src[i] != '\0' && i < size - 1)
-// 	{
-// 		dst[i] = src[i];
-// 		i++;
-// 	}
-// 	dst[i] = '\0';
-// 	return (src_len);
-// }
 
 char	**create_path_array(t_env *env)
 {
@@ -39,7 +19,7 @@ char	**create_path_array(t_env *env)
 	path = NULL;
 	while (env)
 	{
-		if (strcmp(env->key, "PATH") == 0)
+		if (ft_strncmp(env->key, "PATH", ft_strlen(env->key)) == 0)
 			path = split_path_env(env->value);
 		env = env->next;
 	}

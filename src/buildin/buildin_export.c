@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 12:26:15 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 02:26:33 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 03:17:46 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	env_addition(char *arguments, t_env *env)
 	if (!equal_pos)
 		return ;
 	key = strndup(arguments, equal_pos - arguments);
-	value = strdup(equal_pos + 1);
+	value = ft_strdup(equal_pos + 1);
 	if (!is_valid_varname(key))
 		return (export_valid_error(key, value, arguments));
 	existing = find_env(env, key);
@@ -72,7 +72,7 @@ void	env_appending(char *arguments, t_env *env)
 	if (!plus_pos)
 		return ;
 	key = strndup(arguments, plus_pos - arguments);
-	value = strdup(plus_pos + 2);
+	value = ft_strdup(plus_pos + 2);
 	if (!is_valid_varname(key))
 		return (export_valid_error(key, value, arguments));
 	existing = find_env(env, key);
@@ -90,7 +90,7 @@ void	env_no_assignment(char *arguments, t_env *env)
 	t_env	*existing;
 	t_env	*new_node;
 
-	key = strdup(arguments);
+	key = ft_strdup(arguments);
 	value = NULL;
 	equal_pos = NULL;
 	if (!is_valid_varname(key))

@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 13:27:30 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 02:30:33 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 03:09:07 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@ char	*ft_strjoin_safe(char *s1, char *s2)
 	result = malloc(len1 + len2 + 1);
 	if (!result)
 		return (NULL);
-	strcpy(result, s1);
-	strcat(result, s2);
+	ft_strlcpy(result, s1, len1 + 1);
+	ft_strlcat(result, s2, len2 + 1);
 	return (result);
 }
 

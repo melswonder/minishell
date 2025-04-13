@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect_input.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 20:12:50 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/13 02:45:02 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 03:21:07 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,14 @@ int	open_input_redirect(t_redirect *redirect)
 	if (access(redirect->filename, F_OK) != 0)
 	{
 		write(2, "bash: ", 6);
-		write(2, redirect->filename, strlen(redirect->filename));
+		write(2, redirect->filename, ft_strlen(redirect->filename));
 		write(2, ": No such file or directory\n", 28);
 		return (-1);
 	}
 	if (access(redirect->filename, R_OK) != 0)
 	{
 		write(2, "bash: ", 6);
-		write(2, redirect->filename, strlen(redirect->filename));
+		write(2, redirect->filename, ft_strlen(redirect->filename));
 		write(2, ": Permission denied\n", 20);
 		return (-1);
 	}
@@ -67,13 +67,13 @@ void	child_redirect(t_redirect *redirect, int *pipe_fd)
 			heredoc_eof_error(redirect->filename, i);
 			break ;
 		}
-		if (strcmp(line, redirect->filename) == 0)
+		if (ft_strncmp(line, redirect->filename, ft_strlen(line)) == 0)
 		{
 			free(line);
 			break ;
 		}
 		i++;
-		write(pipe_fd[1], line, strlen(line));
+		write(pipe_fd[1], line, ft_strlen(line));
 		write(pipe_fd[1], "\n", 1);
 		free(line);
 	}

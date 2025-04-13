@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   buildin_export_utils2.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 13:33:57 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/11 13:36:16 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 03:18:22 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ t_env	*find_env(t_env *env, char *key)
 	current = env;
 	while (current)
 	{
-		if (strcmp(current->key, key) == 0)
+		if (ft_strncmp(current->key, key, ft_strlen(current->key)) == 0)
 			return (current);
 		current = current->next;
 	}

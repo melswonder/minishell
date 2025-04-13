@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   buildin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 13:19:50 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/11 13:21:33 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 03:07:22 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static char	*extract_arg(char *line, int *index)
 		buffer[j++] = line[i++];
 	buffer[j] = '\0';
 	*index = i;
-	return (strdup(buffer));
+	return (ft_strdup(buffer));
 }
 
 int	is_valid_number(char *arg, unsigned long long *num)
