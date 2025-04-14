@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/14 14:38:33 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 18:53:42 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 
 volatile sig_atomic_t	g_signal = 0;
 
-bool	check_syntax_error(t_shell *shell, t_node *node, t_token *tokens)
+bool	check_syntax_error(t_shell *shell, t_token *tokens)
 {
 	if (shell->syntax_error)
 	{
 		shell->status = 2;
 		printf("syntax_error\n");
-		if (node)
-			free_all_nodes(node);
+		if (shell->head)
+			free_all_nodes(shell->head);
 		if (tokens)
 			free_tokens(tokens);
 		return (true);
@@ -40,13 +40,13 @@ static void	process_input(char *line, t_shell *shell)
 	tokens = tokenize(line, shell);
 	node = parse(tokens, shell);
 	shell->head = node;
-	if (!node)
+	if (!node && shell->syntax_error == false)
 	{
 		free_tokens(tokens);
 		return ;
 	}
 	add_history(line);
-	if (check_syntax_error(shell, node, tokens))
+	if (check_syntax_error(shell, tokens))
 		return ;
 	expand_variable(shell);
 	execute(shell);

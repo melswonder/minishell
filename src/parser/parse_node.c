@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:11:22 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 02:05:09 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 18:58:20 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,10 @@ t_node	*parse_command_node(t_token **token_ptr, t_shell *shell)
 		return (NULL);
 	}
 	token = handle_redirects(node, token, shell);
+	if (token == NULL)
+	{
+		return (NULL);
+	}
 	*token_ptr = token;
 	return (node);
 }

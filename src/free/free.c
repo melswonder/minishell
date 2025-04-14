@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 22:04:53 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/10 22:07:37 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 18:51:09 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ void	free_all_nodes(t_node *head)
 	t_node	*current;
 	t_node	*next;
 
+	if (head == NULL)
+		return ;
 	current = head;
 	while (current != NULL)
 	{
@@ -48,6 +50,8 @@ void	free_node(t_node *node)
 	t_redirect	*redirect;
 	t_redirect	*next;
 
+	if (node == NULL)
+		return ;
 	if (node->command != NULL)
 	{
 		i = 0;
@@ -59,7 +63,8 @@ void	free_node(t_node *node)
 	while (redirect != NULL)
 	{
 		next = redirect->next;
-		free(redirect->filename);
+		if (redirect->filename != NULL)
+			free(redirect->filename);
 		free(redirect);
 		redirect = next;
 	}
