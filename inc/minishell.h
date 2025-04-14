@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/14 18:28:57 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 19:24:51 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,7 +320,7 @@ pid_t							execute_pipeline_node(t_node *node, t_env *env,
 int								execute_pipeline(t_shell *shell);
 void							execute_single_child(t_shell *shell, int fd_in,
 									int fd_out);
-int								execute_single(t_shell *shell, int fd_in,
+void							execute_single(t_shell *shell, int fd_in,
 									int fd_out);
 int								execute(t_shell *shell);
 

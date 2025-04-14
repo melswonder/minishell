@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 11:31:19 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 18:38:17 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 19:25:01 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int	execute_pipeline(t_shell *shell)
 	while (waitpid(pid, &shell->status, 0) > 0)
 	{
 		if (wifexited(shell->status))
-			shell->status = wexitstatus(shell->status);	
+			shell->status = wexitstatus(shell->status);
 	}
 	return (EXIT_SUCCESS);
 }
@@ -119,7 +119,7 @@ int	execute(t_shell *shell)
 		if (is_builtin(shell->head->command[0]))
 			execute_builtin_with_redirect(shell, &fd_in, &fd_out);
 		else
-			shell->status = execute_single(shell, fd_in, fd_out);
+			execute_single(shell, fd_in, fd_out);
 	}
 	return (EXIT_SUCCESS);
 }
