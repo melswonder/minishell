@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 11:31:19 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 00:43:29 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 13:19:02 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,7 @@ void	setup_redirections(t_redirect *redirect, int *local_fd_in,
 	}
 }
 
-pid_t	execute_pipeline_node(t_node *node, t_env *env, int fd_in,
-		int *next_pipe)
+int	execute_pipeline_node(t_node *node, t_env *env, int fd_in, int *pipe_read_fd)
 {
 	int		pipe_fd[2];
 	pid_t	pid;
@@ -86,29 +85,29 @@ pid_t	execute_pipeline_node(t_node *node, t_env *env, int fd_in,
 		if (node->next)
 			execute_child_process(node, env, fd_in, pipe_fd);
 		else
-			execute_child_process(node, env, fd_in, next_pipe);
+			execute_child_process(node, env, fd_in, pipe_read_fd);
 	}
 	if (fd_in != STDIN_FILENO)
 		close(fd_in);
 	if (node->next)
 	{
 		close(pipe_fd[1]);
-		*next_pipe = pipe_fd[0];
+		*pipe_read_fd = pipe_fd[0];
 	}
-	return (pid);
+	return (0);
 }
 
-int	execute_pipeline(t_shell *shell, int fd_in, int fd_out, pid_t pid)
+int	execute_pipeline(t_shell *shell, int fd_in, int fd_out)
 {
 	t_node	*current;
-	int		next_fd;
+	int		pipe_read_fd;
 
-	(void) fd_out;
+	(void)fd_out;
 	current = shell->head;
-	next_fd = fd_in;
+	pipe_read_fd = fd_in;
 	while (current)
 	{
-		pid = execute_pipeline_node(current, shell->env, next_fd, &next_fd);
+		execute_pipeline_node(current, shell->env, pipe_read_fd, &pipe_read_fd);
 		current = current->next;
 	}
 	while (wait(NULL) > 0)
@@ -120,17 +119,12 @@ int	execute(t_shell *shell)
 {
 	int			fd_in;
 	int			fd_out;
-	pid_t		pid;
 	t_redirect	*current;
 
 	fd_in = STDIN_FILENO;
 	fd_out = STDOUT_FILENO;
-	pid = 0;
 	if (shell->head->next != NULL)
-	{
-		execute_pipeline(shell, fd_in, fd_out, pid);
-		return (0);
-	}
+		return (execute_pipeline(shell, fd_in, fd_out), EXIT_SUCCESS);
 	current = shell->head->redirects;
 	while (current != NULL)
 	{
@@ -138,9 +132,12 @@ int	execute(t_shell *shell)
 			return (EXIT_FAILURE);
 		current = current->next;
 	}
-	if (is_builtin(shell->head->command[0]))
-		execute_builtin_with_redirect(shell, &fd_in, &fd_out);
-	else
-		shell->status = execute_single(shell, fd_in, fd_out);
+	if (shell->head->command && shell->head->command[0])
+	{
+		if (is_builtin(shell->head->command[0]))
+			execute_builtin_with_redirect(shell, &fd_in, &fd_out);
+		else
+			shell->status = execute_single(shell, fd_in, fd_out);
+	}
 	return (EXIT_SUCCESS);
 }

@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/14 04:00:39 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 13:19:15 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include "../libft/libft.h"
 # include <ctype.h>
 # include <dirent.h>
 # include <errno.h>
@@ -28,7 +29,6 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
-# include "../libft/libft.h"
 
 # define SINGLE_QUOTE_CHAR '\''
 # define DOUBLE_QUOTE_CHAR '"'
@@ -313,10 +313,10 @@ void							setup_standard_io(int local_fd_in,
 									int local_fd_out, int fd_in);
 void							execute_child_process(t_node *node, t_env *env,
 									int fd_in, int *pipe_fd);
-pid_t							execute_pipeline_node(t_node *node, t_env *env,
-									int fd_in, int *next_pipe);
+int								execute_pipeline_node(t_node *node, t_env *env,
+									int fd_in, int *pipe_read_fd);
 int								execute_pipeline(t_shell *shell, int fd_in,
-									int fd_out, pid_t pid);
+									int fd_out);
 void							execute_single_child(t_shell *shell, int fd_in,
 									int fd_out);
 int								execute_single(t_shell *shell, int fd_in,
