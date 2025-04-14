@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   buildin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 12:26:15 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 03:17:46 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 14:38:10 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,13 +86,11 @@ void	env_no_assignment(char *arguments, t_env *env)
 {
 	char	*key;
 	char	*value;
-	char	*equal_pos;
 	t_env	*existing;
 	t_env	*new_node;
 
 	key = ft_strdup(arguments);
 	value = NULL;
-	equal_pos = NULL;
 	if (!is_valid_varname(key))
 	{
 		printf("export: '%s': not a valid identifier\n", arguments);

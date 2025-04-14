@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect_output.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 20:48:57 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 03:21:26 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 14:31:34 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ int	open_output_redirect(t_redirect *redirect)
 		write(2, "bash: ", 6);
 		write(2, redirect->filename, ft_strlen(redirect->filename));
 		write(2, ": Permission denied\n", 20);
-		return (-1);
+		fd = open("/dev/null", O_WRONLY);
+		return (fd);
 	}
 	fd = open(redirect->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)

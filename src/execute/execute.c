@@ -6,32 +6,9 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 11:31:19 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 13:19:02 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 14:35:56 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// 実行ファイルに実行権限がない際, command not found が表示された
-// ., ..: Permission denied
-// エラー文が標準出力に出力されていた
-// 無効なコマンドを入力するとstill reachableが増える
-// 終了ステータスが無効なコマンド時, シグナル時に0
-// quote
-// PATHをunsetするとエラーが表示されない
-// echo '|': シングルクォートが外されない('|')
-// redirect
-// chmod -w a.txt    ->     echo hello > a.txt: Permissionエラーが表示されない
-// pipeを利用した複数でも表示されない
-// リダイレクトが先頭に来るとコマンドが実行されない
-// cat << EOF: ctrl+Cでminishellが終了する
-// pipe
-// a | b | c: cのエラーのみだった
-// signal
-// cat    ->    ctrl+\: core-dumpが表示されない
-// cat    ->    ctrl+c: 改行がない
-// builtin
-// export: 内容のない変数が表示されてしまっていた
-// echo a b c d e: ab c d eが表示されてしまう
-// echo -n -n: で-nが表示されてしまう
 
 #include "../../inc/minishell.h"
 
@@ -70,7 +47,8 @@ void	setup_redirections(t_redirect *redirect, int *local_fd_in,
 	}
 }
 
-int	execute_pipeline_node(t_node *node, t_env *env, int fd_in, int *pipe_read_fd)
+int	execute_pipeline_node(t_node *node, t_env *env, int fd_in,
+		int *pipe_read_fd)
 {
 	int		pipe_fd[2];
 	pid_t	pid;
@@ -97,14 +75,13 @@ int	execute_pipeline_node(t_node *node, t_env *env, int fd_in, int *pipe_read_fd
 	return (0);
 }
 
-int	execute_pipeline(t_shell *shell, int fd_in, int fd_out)
+int	execute_pipeline(t_shell *shell)
 {
 	t_node	*current;
 	int		pipe_read_fd;
 
-	(void)fd_out;
 	current = shell->head;
-	pipe_read_fd = fd_in;
+	pipe_read_fd = STDIN_FILENO;
 	while (current)
 	{
 		execute_pipeline_node(current, shell->env, pipe_read_fd, &pipe_read_fd);
@@ -124,7 +101,7 @@ int	execute(t_shell *shell)
 	fd_in = STDIN_FILENO;
 	fd_out = STDOUT_FILENO;
 	if (shell->head->next != NULL)
-		return (execute_pipeline(shell, fd_in, fd_out), EXIT_SUCCESS);
+		return (execute_pipeline(shell), EXIT_SUCCESS);
 	current = shell->head->redirects;
 	while (current != NULL)
 	{

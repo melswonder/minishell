@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/14 13:19:15 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 13:31:27 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,8 +315,7 @@ void							execute_child_process(t_node *node, t_env *env,
 									int fd_in, int *pipe_fd);
 int								execute_pipeline_node(t_node *node, t_env *env,
 									int fd_in, int *pipe_read_fd);
-int								execute_pipeline(t_shell *shell, int fd_in,
-									int fd_out);
+int								execute_pipeline(t_shell *shell);
 void							execute_single_child(t_shell *shell, int fd_in,
 									int fd_out);
 int								execute_single(t_shell *shell, int fd_in,

@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/14 12:34:02 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 14:38:33 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ static void	process_input(char *line, t_shell *shell)
 	if (check_syntax_error(shell, node, tokens))
 		return ;
 	expand_variable(shell);
-	print_node(shell->head);
 	execute(shell);
 	free_tokens(tokens);
 	free_all_nodes(shell->head);

@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 20:12:50 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 13:20:42 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 14:40:55 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,7 @@ void	child_redirect(t_redirect *redirect, int *pipe_fd)
 		write(pipe_fd[1], "\n", 1);
 		free(line);
 	}
-	close(pipe_fd[1]);
-	exit(0);
+	exit(close(pipe_fd[1]));
 }
 
 int	open_heredoc_redirect(t_redirect *redirect)

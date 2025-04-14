@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 02:57:12 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 13:15:00 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 14:34:32 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ void	execute_single_child(t_shell *shell, int fd_in, int fd_out)
 	execute_normal(shell->head, shell->env);
 }
 
-void	setup_io_descriptors(int *local_fd_in,int *local_fd_out,int *pipe_out)
+void	setup_io_descriptors(int *local_fd_in, int *local_fd_out, int *pipe_out)
 {
-    if (*local_fd_out == STDOUT_FILENO && *pipe_out != STDOUT_FILENO)
-    {
-        dup2(*pipe_out, STDOUT_FILENO);
-        close(*pipe_out);
-    }
+	if (*local_fd_out == STDOUT_FILENO && *pipe_out != STDOUT_FILENO)
+	{
+		dup2(*pipe_out, STDOUT_FILENO);
+		close(*pipe_out);
+	}
 	else
 	{
 		if (*pipe_out != STDOUT_FILENO)
@@ -44,9 +44,8 @@ void	setup_io_descriptors(int *local_fd_in,int *local_fd_out,int *pipe_out)
 	{
 		dup2(*local_fd_out, STDOUT_FILENO);
 		close(*local_fd_out);
-	}	
+	}
 }
-
 
 void	execute_child_process(t_node *node, t_env *env, int fd_in, int *pipe_fd)
 {
@@ -65,7 +64,7 @@ void	execute_child_process(t_node *node, t_env *env, int fd_in, int *pipe_fd)
 		pipe_out = pipe_fd[1];
 	}
 	setup_redirections(node->redirects, &local_fd_in, &local_fd_out);
-	setup_io_descriptors(&local_fd_in,&local_fd_out,&pipe_out);
+	setup_io_descriptors(&local_fd_in, &local_fd_out, &pipe_out);
 	if (is_builtin(node->command[0]))
 		exit(execute_builtin_command(node, env));
 	else

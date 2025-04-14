@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 21:16:10 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 03:19:56 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 14:30:10 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	execute_direct_path(t_node *node, t_env *env)
 		{
 			write(2, "bash:", 5);
 			write(2, node->command[0], strlen(node->command[0]));
-			write(2, "Permission denied\n", 18);
+			write(2, ": Permission denied\n", 20);
 		}
 		free_env_array(envp);
 	}
