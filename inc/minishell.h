@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/14 13:31:27 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 18:28:57 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,7 +293,9 @@ void							child_redirect(t_redirect *redirect,
 void							free_path_array(char **path);
 void							free_env_array(char **envp);
 int								ft_n_len(int n);
-char							*ft_itoa(int n);
+size_t							ft_strnlen(const char *s, size_t n);
+char							*ft_strndup(const char *s, size_t n);
+
 void							heredoc_eof_error(char *name, int i);
 char							**create_path_array(t_env *env);
 void							print_is_directory(char *str);
@@ -313,7 +315,7 @@ void							setup_standard_io(int local_fd_in,
 									int local_fd_out, int fd_in);
 void							execute_child_process(t_node *node, t_env *env,
 									int fd_in, int *pipe_fd);
-int								execute_pipeline_node(t_node *node, t_env *env,
+pid_t							execute_pipeline_node(t_node *node, t_env *env,
 									int fd_in, int *pipe_read_fd);
 int								execute_pipeline(t_shell *shell);
 void							execute_single_child(t_shell *shell, int fd_in,

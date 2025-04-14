@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 22:51:57 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 14:35:43 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 18:26:53 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,34 +27,6 @@ int	ft_n_len(int n)
 		result++;
 	}
 	return (result);
-}
-
-char	*ft_itoa(int n)
-{
-	char	*dest;
-	int		len;
-	long	num;
-	int		i;
-
-	num = n;
-	len = ft_n_len(n);
-	dest = (char *)malloc(sizeof(char) * (len + 1));
-	if (!dest)
-		return (NULL);
-	dest[len] = '\0';
-	if (num < 0)
-	{
-		dest[0] = '-';
-		num = -num;
-	}
-	i = len - 1;
-	while (num >= 10)
-	{
-		dest[i--] = (num % 10) + '0';
-		num = num / 10;
-	}
-	dest[i] = num + '0';
-	return (dest);
 }
 
 // void	print_node(t_node *node)

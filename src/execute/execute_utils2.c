@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 15:03:36 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 17:52:57 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 18:26:56 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,18 +31,18 @@ char	*ft_strtok(char *str, const char *delim)
 			*next = '\0';
 			next++;
 			if (start == next - 1)
-				return ft_strtok(NULL, delim);
+				return (ft_strtok(NULL, delim));
 			return (start);
 		}
 		d++;
 	}
 	next++;
-	return ft_strtok(NULL, delim);
+	return (ft_strtok(NULL, delim));
 }
 
 int	ft_strcmp(char *s1, char *s2)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0')
@@ -52,8 +52,8 @@ int	ft_strcmp(char *s1, char *s2)
 
 char	*ft_strstr(char *str, char *to_find)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	if (to_find[0] == '\0')
 		return (str);
@@ -79,31 +79,14 @@ char	*ft_strstr(char *str, char *to_find)
 	return (0);
 }
 
-int	ft_n_len(int n)
+size_t	ft_strnlen(const char *s, size_t n)
 {
-	int	result;
+	size_t	i;
 
-	if (n == 0)
-		return (1);
-	result = 0;
-	if (n < 0)
-		result++;
-	while (n != 0)
-	{
-		n = n / 10;
-		result++;
-	}
-	return (result);
-}
-
-size_t ft_strnlen(const char *s, size_t n)
-{
-    size_t i;
-
-    i = 0;
-    while (i < n && s[i] != '\0')
-        i++;
-    return (i);
+	i = 0;
+	while (i < n && s[i] != '\0')
+		i++;
+	return (i);
 }
 
 char	*ft_strndup(const char *s, size_t n)

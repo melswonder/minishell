@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 11:31:19 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 14:35:56 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 18:38:17 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	setup_redirections(t_redirect *redirect, int *local_fd_in,
 	}
 }
 
-int	execute_pipeline_node(t_node *node, t_env *env, int fd_in,
+pid_t	execute_pipeline_node(t_node *node, t_env *env, int fd_in,
 		int *pipe_read_fd)
 {
 	int		pipe_fd[2];
@@ -72,11 +72,12 @@ int	execute_pipeline_node(t_node *node, t_env *env, int fd_in,
 		close(pipe_fd[1]);
 		*pipe_read_fd = pipe_fd[0];
 	}
-	return (0);
+	return (pid);
 }
 
 int	execute_pipeline(t_shell *shell)
 {
+	pid_t	pid;
 	t_node	*current;
 	int		pipe_read_fd;
 
@@ -84,11 +85,15 @@ int	execute_pipeline(t_shell *shell)
 	pipe_read_fd = STDIN_FILENO;
 	while (current)
 	{
-		execute_pipeline_node(current, shell->env, pipe_read_fd, &pipe_read_fd);
+		pid = execute_pipeline_node(current, shell->env, pipe_read_fd,
+				&pipe_read_fd);
 		current = current->next;
 	}
-	while (wait(NULL) > 0)
-		;
+	while (waitpid(pid, &shell->status, 0) > 0)
+	{
+		if (wifexited(shell->status))
+			shell->status = wexitstatus(shell->status);	
+	}
 	return (EXIT_SUCCESS);
 }
 
