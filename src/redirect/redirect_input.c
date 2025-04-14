@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 20:12:50 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 19:05:16 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 21:35:02 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void	child_redirect(t_redirect *redirect, int *pipe_fd)
 			heredoc_eof_error(redirect->filename, i);
 			break ;
 		}
-		if (strcmp(line, redirect->filename) == 0)
+		if (ft_strcmp(line, redirect->filename) == 0)
 		{
 			free(line);
 			break ;

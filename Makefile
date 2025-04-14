@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+         #
+#    By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/06 20:58:32 by hirwatan          #+#    #+#              #
-#    Updated: 2025/04/14 02:20:53 by kiwasa           ###   ########.fr        #
+#    Updated: 2025/04/14 21:32:20 by hirwatan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,7 @@ SRCS = 	src/tokenizer/tokenizer.c \
 		src/buildin/buildin_echo.c \
 		src/buildin/buildin_exit.c \
 		src/buildin/buildin_cd.c \
+		src/buildin/buildin_cd_utils.c \
 		src/buildin/buildin_pwd.c \
 		src/buildin/buildin_env.c \
 		src/buildin/buildin_unset.c \
@@ -36,6 +37,7 @@ SRCS = 	src/tokenizer/tokenizer.c \
 		src/execute/execute.c \
 		src/execute/execute_child.c \
 		src/execute/execute_utils.c \
+		src/execute/execute_utils2.c \
 		src/redirect/redirect_input.c \
 		src/redirect/redirect_output.c \
 		src/redirect/redirect.c \

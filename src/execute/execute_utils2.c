@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 15:03:36 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 18:26:56 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 21:38:46 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,28 +16,24 @@ char	*ft_strtok(char *str, const char *delim)
 {
 	static char	*next;
 	char		*start;
-	const char	*d;
 
 	if (str != NULL)
 		next = str;
 	if (next == NULL || *next == '\0')
 		return (NULL);
+	while (*next && ft_strchr(delim, *next))
+		next++;
+	if (*next == '\0')
+		return (NULL);
 	start = next;
-	d = delim;
-	while (*d != '\0')
+	while (*next && !ft_strchr(delim, *next))
+		next++;
+	if (*next)
 	{
-		if (*next == *d)
-		{
-			*next = '\0';
-			next++;
-			if (start == next - 1)
-				return (ft_strtok(NULL, delim));
-			return (start);
-		}
-		d++;
+		*next = '\0';
+		next++;
 	}
-	next++;
-	return (ft_strtok(NULL, delim));
+	return (start);
 }
 
 int	ft_strcmp(char *s1, char *s2)

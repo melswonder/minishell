@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 12:26:15 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 14:38:10 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 21:35:14 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void	env_appending(char *arguments, t_env *env)
 	char	*new_value;
 
 	new_value = NULL;
-	plus_pos = strstr(arguments, "+=");
+	plus_pos = ft_strstr(arguments, "+=");
 	if (!plus_pos)
 		return ;
 	key = strndup(arguments, plus_pos - arguments);

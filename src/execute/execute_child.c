@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 02:57:12 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 19:26:43 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 21:33:18 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,10 @@ int	process_special_case(t_node *node)
 	{
 		if (current->redirects->kind == RD_INPUT
 			&& current->next->redirects->kind == RD_APPEND)
-			write(2,"cat: -: input file is output file\n",34);
-		return(1);
+			write(2, "cat: -: input file is output file\n", 34);
+		return (1);
 	}
-	return(0);
+	return (0);
 }
 
 void	execute_child_process(t_node *node, t_env *env, int fd_in, int *pipe_fd)

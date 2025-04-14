@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/14 19:24:51 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 21:36:12 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -323,5 +323,12 @@ void							execute_single_child(t_shell *shell, int fd_in,
 void							execute_single(t_shell *shell, int fd_in,
 									int fd_out);
 int								execute(t_shell *shell);
+char							*get_home_path(t_env *env);
+char							*ft_getenv(char *str, t_env *env);
+int								elements_check(char **str);
+char							*get_array_path(char *str, t_env *env);
+char							*ft_strtok(char *str, const char *delim);
+int								ft_strcmp(char *s1, char *s2);
+char							*ft_strstr(char *str, char *to_find);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   buildin_unset.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 13:25:28 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 03:13:13 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/14 21:34:55 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	unset_env(t_env **env, char *unset_key)
 	curr = *env;
 	while (curr)
 	{
-		if (strcmp(curr->key, unset_key) == 0)
+		if (ft_strcmp(curr->key, unset_key) == 0)
 		{
 			if (prev)
 				prev->next = curr->next;

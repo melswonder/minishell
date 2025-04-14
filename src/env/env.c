@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 21:12:52 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 14:20:49 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/14 21:38:56 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,11 @@ void	fill_path_array(char **result, char *path)
 	int		i;
 
 	i = 0;
-	token = strtok(path, ":");
+	token = ft_strtok(path, ":");
 	while (token)
 	{
 		result[i++] = ft_strdup(token);
-		token = strtok(NULL, ":");
+		token = ft_strtok(NULL, ":");
 	}
 	result[i] = NULL;
 }
