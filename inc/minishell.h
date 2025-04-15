@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/15 20:05:42 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/15 20:07:07 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,8 +123,6 @@ t_env							*init_env(char **envp);
 t_shell							*init_shell(t_env *env);
 void							init_parse(t_node **current, t_node **head,
 									t_node **next_node);
-
-
 
 //---free---
 void							free_all_nodes(t_node *head);
