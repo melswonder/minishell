@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 22:00:20 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 03:17:03 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/15 20:02:11 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,4 +76,11 @@ t_env	*init_env(char **envp)
 		i++;
 	}
 	return (head);
+}
+
+void	init_parse(t_node **current, t_node **head, t_node **next_node)
+{
+	*current = NULL;
+	*head = NULL;
+	*next_node = NULL;
 }

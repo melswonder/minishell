@@ -6,7 +6,7 @@
 /*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 01:09:15 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 18:58:34 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/15 20:05:06 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,7 @@ static t_node	*parse_pipeline(t_token **token, t_shell *shell)
 	t_node	*head;
 	t_node	*next_node;
 
-	current = NULL;
-	head = NULL;
-	next_node = NULL;
+	init_parse(&current, &head, &next_node);
 	if (check_pipeline_start(token, shell))
 		return (NULL);
 	while (*token != NULL && (*token)->kind != TK_EOF)

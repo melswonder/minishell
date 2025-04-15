@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 22:17:02 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/15 19:39:35 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 19:55:17 by kiwasa           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	setup_signal(void)
 
 void	signal_handler(int sig)
 {
-	g_signal = sig;
+	g_signal = 130;
 	if (sig == SIGINT)
 	{
 		write(1, "\n", 1);
@@ -49,7 +49,6 @@ void	signal_pipe(int sig)
 {
 	if (sig == SIGINT)
 	{
-		g_signal = 130;
 		write(1, "\b\n", 2);
 	}
 	if (sig == SIGQUIT)
