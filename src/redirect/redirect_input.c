@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 20:12:50 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/15 15:15:12 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 20:08:30 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void	heredoc_eof_error(char *name, int i)
 		free(num_str);
 	}
 	write(2, " delimited by end-of-file (wanted `", 35);
-	write(2, name, strlen(name));
+	write(2, name, ft_strlen(name));
 	write(2, "')\n", 3);
 }
 

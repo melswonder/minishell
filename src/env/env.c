@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 21:12:52 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 21:38:56 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 20:08:17 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ char	**convert_env_to_array(t_env *env)
 	tmp = env;
 	while (tmp)
 	{
-		line = malloc(strlen(tmp->key) + ft_strlen(tmp->value) + 2);
+		line = malloc(ft_strlen(tmp->key) + ft_strlen(tmp->value) + 2);
 		if (!line)
 			break ;
 		envp[i++] = env_print_join(line, tmp->key, tmp->value);

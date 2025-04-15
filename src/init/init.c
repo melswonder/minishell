@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 22:00:20 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/15 20:02:11 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/15 20:09:27 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ t_env	*create_init_env_node(char *env_str)
 	equal_sign = ft_strchr(env_str, '=');
 	if (equal_sign)
 	{
-		new_node->key = strndup(env_str, equal_sign - env_str);
+		new_node->key = ft_strndup(env_str, equal_sign - env_str);
 		new_node->value = ft_strdup(equal_sign + 1);
 	}
 	else

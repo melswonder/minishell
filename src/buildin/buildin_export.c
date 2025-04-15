@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 12:26:15 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 21:35:14 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 20:09:27 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	env_addition(char *arguments, t_env *env)
 	equal_pos = ft_strchr(arguments, '=');
 	if (!equal_pos)
 		return ;
-	key = strndup(arguments, equal_pos - arguments);
+	key = ft_strndup(arguments, equal_pos - arguments);
 	value = ft_strdup(equal_pos + 1);
 	if (!is_valid_varname(key))
 		return (export_valid_error(key, value, arguments));
@@ -71,7 +71,7 @@ void	env_appending(char *arguments, t_env *env)
 	plus_pos = ft_strstr(arguments, "+=");
 	if (!plus_pos)
 		return ;
-	key = strndup(arguments, plus_pos - arguments);
+	key = ft_strndup(arguments, plus_pos - arguments);
 	value = ft_strdup(plus_pos + 2);
 	if (!is_valid_varname(key))
 		return (export_valid_error(key, value, arguments));

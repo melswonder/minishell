@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 13:22:06 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 21:32:58 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 20:09:11 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int	buildin_cd(t_node *node, t_env *env)
 		old_pwd[0] = '\0';
 	if (node->command[1] == NULL)
 		dir = get_home_path(env);
-	else if (node->command[1] && strncmp(node->command[1], "..", 2) == 0)
+	else if (node->command[1] && ft_strncmp(node->command[1], "..", 2) == 0)
 	{
 		temp_dir = get_array_path(node->command[1], env);
 		dir = temp_dir;

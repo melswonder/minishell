@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 21:30:14 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 21:32:57 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 20:09:07 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ char	*get_array_path(char *str, t_env *env)
 	char	*pwd;
 	char	*last_slash;
 
-	if (strncmp(str, "..", ft_strlen(str)) == 0)
+	if (ft_strncmp(str, "..", ft_strlen(str)) == 0)
 	{
 		pwd = ft_getenv("PWD", env);
 		if (pwd == NULL)

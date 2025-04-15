@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kiwasa <kiwasa@student.42.jp>              +#+  +:+       +#+        */
+/*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 21:08:36 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 03:16:02 by kiwasa           ###   ########.fr       */
+/*   Updated: 2025/04/15 20:08:30 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		return (NULL);
 	i = 0;
 	s1_size = ft_strlen(s1);
-	dest = (char *)malloc(strlen(s1) + ft_strlen(s2) + 1);
+	dest = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!dest)
 		return (NULL);
 	while (s1[i] != '\0')

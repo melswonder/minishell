@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 21:16:10 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 14:30:10 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 20:08:30 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ char	**create_path_array(t_env *env)
 void	print_is_directory(char *str)
 {
 	write(2, "bash: ", 6);
-	write(2, str, strlen(str));
+	write(2, str, ft_strlen(str));
 	write(2, ": Is a directory\n", 17);
 	exit(126);
 }
@@ -48,13 +48,13 @@ void	execute_direct_path(t_node *node, t_env *env)
 		else if (access(node->command[0], F_OK) != 0)
 		{
 			write(2, "bash:  ", 7);
-			write(2, node->command[0], strlen(node->command[0]));
+			write(2, node->command[0], ft_strlen(node->command[0]));
 			write(2, ":  No such file or directory\n", 29);
 		}
 		else if (access(node->command[0], X_OK) != 0)
 		{
 			write(2, "bash:", 5);
-			write(2, node->command[0], strlen(node->command[0]));
+			write(2, node->command[0], ft_strlen(node->command[0]));
 			write(2, ": Permission denied\n", 20);
 		}
 		free_env_array(envp);

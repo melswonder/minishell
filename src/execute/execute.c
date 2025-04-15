@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 11:31:19 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/15 19:37:04 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 20:08:21 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	execute_normal(t_node *node, t_env *env)
 	}
 	path = create_path_array(env);
 	search_command_in_path(node, env, path);
-	write(2, node->command[0], strlen(node->command[0]));
+	write(2, node->command[0], ft_strlen(node->command[0]));
 	write(2, ": command not found", 19);
 	write(2, "\n", 1);
 	exit(127);
