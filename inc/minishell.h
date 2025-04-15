@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/01 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/14 21:36:12 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 19:21:30 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,7 @@ void							signal_handler(int sig);
 void							setup_signal(void);
 void							signal_exit(int sig);
 void							signal_handler_exit(int sig);
+void							signal_pipe(int sig);
 
 //---debug---
 void							print_node(t_node *node);
@@ -302,10 +303,6 @@ void							print_is_directory(char *str);
 void							execute_direct_path(t_node *node, t_env *env);
 void							search_command_in_path(t_node *node, t_env *env,
 									char **path);
-void							execute_child_process(t_node *node, t_env *env,
-									int fd_in, int *pipe_fd);
-void							execute_child_process(t_node *node, t_env *env,
-									int fd_in, int *pipe_fd);
 t_redirect						*connect_redirect_node(t_redirect *redirect,
 									int stdin_fd, int stdout_fd);
 int								execute_normal(t_node *node, t_env *env);
@@ -313,8 +310,6 @@ void							setup_redirections(t_redirect *redirect,
 									int *local_fd_in, int *local_fd_out);
 void							setup_standard_io(int local_fd_in,
 									int local_fd_out, int fd_in);
-void							execute_child_process(t_node *node, t_env *env,
-									int fd_in, int *pipe_fd);
 pid_t							execute_pipeline_node(t_node *node, t_env *env,
 									int fd_in, int *pipe_read_fd);
 int								execute_pipeline(t_shell *shell);
@@ -330,5 +325,12 @@ char							*get_array_path(char *str, t_env *env);
 char							*ft_strtok(char *str, const char *delim);
 int								ft_strcmp(char *s1, char *s2);
 char							*ft_strstr(char *str, char *to_find);
+void							setup_io_descriptors(int *local_fd_in,
+									int *local_fd_out, int *pipe_out);
+int								process_special_case(t_node *node);
+void							execute_child_process(t_node *node, t_env *env,
+									int fd_in, int *pipe_fd);
+void							execute_single(t_shell *shell, int fd_in,
+									int fd_out);
 
 #endif

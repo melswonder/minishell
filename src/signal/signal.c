@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 22:17:02 by kiwasa            #+#    #+#             */
-/*   Updated: 2025/04/14 19:28:52 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 19:39:35 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,18 +32,28 @@ void	signal_handler(int sig)
 
 void	signal_exit(int sig)
 {
-	(void) sig;
+	(void)sig;
 	exit(1);
 }
 
 void	signal_handler_exit(int sig)
 {
-	g_signal = sig;
 	if (sig == SIGINT)
 	{
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
+		write(1, "\b", 1);
 	}
-	exit (130);
+	exit(130);
+}
+
+void	signal_pipe(int sig)
+{
+	if (sig == SIGINT)
+	{
+		g_signal = 130;
+		write(1, "\b\n", 2);
+	}
+	if (sig == SIGQUIT)
+	{
+		write(1, "\bQuit (core dumped)\n", 20);
+	}
 }

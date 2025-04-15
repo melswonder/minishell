@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 20:12:50 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 21:35:02 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 15:15:12 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ void	child_redirect(t_redirect *redirect, int *pipe_fd)
 	char		*line;
 	static int	i = 1;
 
-	// signal(SIGINT, SIG_DFL);
 	signal(SIGINT, signal_handler_exit);
 	close(pipe_fd[0]);
 	while (1)
@@ -78,7 +77,8 @@ void	child_redirect(t_redirect *redirect, int *pipe_fd)
 		write(pipe_fd[1], "\n", 1);
 		free(line);
 	}
-	exit(close(pipe_fd[1]));
+	close(pipe_fd[1]);
+	exit(0);
 }
 
 int	open_heredoc_redirect(t_redirect *redirect)

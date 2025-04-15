@@ -6,22 +6,11 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 02:57:12 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 21:33:18 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 19:17:33 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../inc/minishell.h"
-
-void	execute_single_child(t_shell *shell, int fd_in, int fd_out)
-{
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
-	if (fd_in != STDIN_FILENO)
-		dup2(fd_in, STDIN_FILENO);
-	if (fd_out != STDOUT_FILENO)
-		dup2(fd_out, STDOUT_FILENO);
-	execute_normal(shell->head, shell->env);
-}
 
 void	setup_io_descriptors(int *local_fd_in, int *local_fd_out, int *pipe_out)
 {
@@ -55,10 +44,13 @@ int	process_special_case(t_node *node)
 	if (ft_strncmp(current->command[0], "cat",
 			ft_strlen(current->command[0])) == 0)
 	{
-		if (current->redirects->kind == RD_INPUT
+		if (current->redirects && current->next
+			&& current->redirects->kind == RD_INPUT && current->next->redirects
 			&& current->next->redirects->kind == RD_APPEND)
+		{
 			write(2, "cat: -: input file is output file\n", 34);
-		return (1);
+			return (1);
+		}
 	}
 	return (0);
 }
@@ -93,18 +85,22 @@ void	execute_single(t_shell *shell, int fd_in, int fd_out)
 {
 	pid_t	pid;
 
-	signal(SIGINT, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, signal_pipe);
+	signal(SIGQUIT, signal_pipe);
 	pid = fork();
 	if (pid == 0)
-		execute_single_child(shell, fd_in, fd_out);
+	{
+		if (fd_in != STDIN_FILENO)
+			dup2(fd_in, STDIN_FILENO);
+		if (fd_out != STDOUT_FILENO)
+			dup2(fd_out, STDOUT_FILENO);
+		execute_normal(shell->head, shell->env);
+	}
 	else
 	{
 		waitpid(pid, &shell->status, 0);
 		if (wifexited(shell->status))
 			shell->status = wexitstatus(shell->status);
-		signal(SIGINT, signal_handler);
-		signal(SIGQUIT, SIG_IGN);
 	}
 	if (fd_in != STDIN_FILENO)
 		close(fd_in);

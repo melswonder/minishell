@@ -6,7 +6,7 @@
 /*   By: hirwatan <hirwatan@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 11:31:19 by hirwatan          #+#    #+#             */
-/*   Updated: 2025/04/14 19:25:01 by hirwatan         ###   ########.fr       */
+/*   Updated: 2025/04/15 19:37:04 by hirwatan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,8 @@ pid_t	execute_pipeline_node(t_node *node, t_env *env, int fd_in,
 	pid = fork();
 	if (pid < 0)
 		exit(EXIT_FAILURE);
+	signal(SIGINT, signal_pipe);
+	signal(SIGQUIT, signal_pipe);
 	if (pid == 0)
 	{
 		if (node->next)
@@ -80,20 +82,27 @@ int	execute_pipeline(t_shell *shell)
 	pid_t	pid;
 	t_node	*current;
 	int		pipe_read_fd;
+	int		last_pid;
 
+	last_pid = 1;
 	current = shell->head;
 	pipe_read_fd = STDIN_FILENO;
 	while (current)
 	{
 		pid = execute_pipeline_node(current, shell->env, pipe_read_fd,
 				&pipe_read_fd);
+		if (!current->next)
+			last_pid = pid;
 		current = current->next;
 	}
-	while (waitpid(pid, &shell->status, 0) > 0)
+	if (last_pid > 0)
 	{
-		if (wifexited(shell->status))
-			shell->status = wexitstatus(shell->status);
+		waitpid(last_pid, &shell->status, 0);
+		if (shell->status == SIGINT)
+			shell->status = shell->status + 128;
 	}
+	while (wait(NULL) > 0)
+		;
 	return (EXIT_SUCCESS);
 }
 
@@ -108,6 +117,8 @@ int	execute(t_shell *shell)
 	if (shell->head->next != NULL)
 		return (execute_pipeline(shell), EXIT_SUCCESS);
 	current = shell->head->redirects;
+	signal(SIGINT, signal_pipe);
+	signal(SIGQUIT, signal_pipe);
 	while (current != NULL)
 	{
 		if (apply_redirections(current, &fd_in, &fd_out) != 0)
